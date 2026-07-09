@@ -18,14 +18,7 @@ const Cart = ({ cartItems, total, onCartUpdate, onCheckout }) => {
     }
   };
 
-  const handleRemove = async (menuId) => {
-    try {
-      await cartAPI.remove(menuId);
-      onCartUpdate();
-    } catch (err) {
-      alert('Failed to remove item: ' + err.message);
-    }
-  };
+
 
   const handleClearCart = async () => {
     if (window.confirm('Clear all items from the cart?')) {
