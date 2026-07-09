@@ -33,46 +33,43 @@ const Login = ({ onLogin }) => {
       display: 'flex', 
       justifyContent: 'center', 
       alignItems: 'center', 
-      minHeight: '100vh', 
-      width: '100vw',
+      height: '100vh', 
       background: 'var(--bg-color)',
       padding: '1rem'
     }}>
       <div style={{
-        background: 'var(--bg-panel)',
-        padding: '3rem 2rem',
-        borderRadius: 'var(--radius-xl)',
-        boxShadow: 'var(--shadow-floating)',
+        background: '#fff',
+        padding: '2.5rem 2rem',
+        borderRadius: '16px',
+        boxShadow: 'var(--shadow-lg)',
         width: '100%',
-        maxWidth: '420px',
-        border: '1px solid var(--border-color)'
+        maxWidth: '400px'
       }}>
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{ 
-            width: '64px', 
-            height: '64px', 
-            background: 'var(--primary-glass)', 
+            width: '60px', 
+            height: '60px', 
+            background: 'var(--primary-light)', 
             borderRadius: '50%', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            margin: '0 auto 1.5rem auto'
+            margin: '0 auto 1rem auto'
           }}>
-            <Lock size={32} color="var(--primary)" />
+            <Lock size={30} color="var(--primary)" />
           </div>
-          <h2 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem', fontSize: '1.75rem', fontWeight: '800' }}>Admin Login</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>Sign in to access the POS system</p>
+          <h2 style={{ color: 'var(--text-color)', marginBottom: '0.5rem' }}>Admin Login</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Sign in to access the POS system</p>
         </div>
 
         {error && (
           <div style={{ 
-            background: 'var(--danger-light)', 
-            color: 'var(--danger-dark)', 
-            padding: '1rem', 
-            borderRadius: 'var(--radius-md)', 
+            background: '#fee2e2', 
+            color: '#ef4444', 
+            padding: '0.75rem', 
+            borderRadius: '8px', 
             marginBottom: '1.5rem',
-            fontSize: '0.95rem',
-            fontWeight: '600',
+            fontSize: '0.9rem',
             textAlign: 'center'
           }}>
             {error}
@@ -80,33 +77,31 @@ const Login = ({ onLogin }) => {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-primary)', fontWeight: '600', fontSize: '0.95rem' }}>Username</label>
+          <div className="form-group">
+            <label>Username</label>
             <div style={{ position: 'relative' }}>
-              <User size={20} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--text-muted)' }} />
+              <User size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
               <input 
-                className="form-input"
                 type="text" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter username"
-                style={{ paddingLeft: '48px' }}
+                style={{ paddingLeft: '40px' }}
                 required
               />
             </div>
           </div>
 
-          <div className="form-group" style={{ marginBottom: '2.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-primary)', fontWeight: '600', fontSize: '0.95rem' }}>Password</label>
+          <div className="form-group" style={{ marginBottom: '2rem' }}>
+            <label>Password</label>
             <div style={{ position: 'relative' }}>
-              <Lock size={20} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--text-muted)' }} />
+              <Lock size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
               <input 
-                className="form-input"
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password"
-                style={{ paddingLeft: '48px' }}
+                style={{ paddingLeft: '40px' }}
                 required
               />
             </div>
@@ -114,12 +109,13 @@ const Login = ({ onLogin }) => {
 
           <button 
             type="submit" 
-            className="checkout-btn" 
+            className="btn-primary" 
+            style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
             disabled={loading}
           >
             {loading ? 'Signing in...' : (
               <>
-                Sign In <LogIn size={20} />
+                Sign In <LogIn size={18} />
               </>
             )}
           </button>
