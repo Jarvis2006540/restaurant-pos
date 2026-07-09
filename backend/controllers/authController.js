@@ -14,7 +14,25 @@ const authController = {
       }
       
       if (!row) {
-        return res.status(401).json({ error: 'Invalid credentials' });
+        // Fallback: If no users exist (due to serverless async race conditions), create the admin user
+        db.get('SELECT COUNT(*) as count FROM users', (countErr, countRow) => {
+          if (!countErr && countRow && countRow.count === 0 && username === 'admin' && password === 'admin123') {
+            db.run("INSERT INTO users (username, password, role) VALUES ('admin', 'admin123', 'admin')", (insertErr) => {
+              if (insertErr) {
+                return res.status(500).json({ error: insertErr.message });
+              }
+              // Immediately log them in
+              const token = Buffer.from(`1:admin:${Date.now()}`).toString('base64');
+              return res.json({
+                token,
+                user: { id: 1, username: 'admin', role: 'admin' }
+              });
+            });
+            return;
+          }
+          return res.status(401).json({ error: 'Invalid credentials' });
+        });
+        return;
       }
 
       // Simple token for basic auth (in production use JWT)
