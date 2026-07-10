@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { menuAPI } from '../../services/api';
+import { menuAPI, BACKEND_URL } from '../../services/api';
 import MenuForm from './MenuForm';
 import { Edit2, Trash2, Plus } from 'lucide-react';
 
@@ -92,7 +92,7 @@ const ManageMenu = () => {
                 <td>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <img 
-                      src={item.image ? (item.image.startsWith('http') ? item.image : `http://localhost:5000${item.image}`) : '/placeholder-food.jpg'}
+                      src={item.image ? (item.image.startsWith('http') ? item.image : `${BACKEND_URL}${item.image}`) : '/placeholder-food.jpg'}
                       alt={item.name}
                       style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }}
                       onError={(e) => {

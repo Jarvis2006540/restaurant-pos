@@ -1,8 +1,9 @@
 import React from 'react';
+import { BACKEND_URL } from '../../services/api';
 
 const MenuItem = ({ item, onAddToCart }) => {
   const imageUrl = item.image 
-    ? (item.image.startsWith('http') ? item.image : `http://localhost:5000${item.image}`)
+    ? (item.image.startsWith('http') ? item.image : `${BACKEND_URL}${item.image}`)
     : 'https://via.placeholder.com/400x300?text=' + encodeURIComponent(item.name);
 
   return (

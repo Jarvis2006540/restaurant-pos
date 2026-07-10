@@ -1853,7 +1853,6 @@ textarea.form-control {
 
   /* Force hide these elements */
   .sidebar,
-  .receipt-modal-overlay,
   .receipt-modal-header,
   .receipt-modal-footer,
   .bill-receipt-actions,
@@ -1878,6 +1877,7 @@ textarea.form-control {
   .main-content,
   .bill-page,
   .bill-container,
+  .receipt-modal-overlay,
   .receipt-modal,
   .receipt-modal-body,
   .print-bill-wrapper {

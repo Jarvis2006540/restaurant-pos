@@ -7,6 +7,8 @@ if (API_BASE_URL && !API_BASE_URL.endsWith('/api') && !API_BASE_URL.endsWith('/a
   // Remove trailing slash if exists before appending /api
   API_BASE_URL = API_BASE_URL.replace(/\/$/, '') + '/api';
 }
+
+export const BACKEND_URL = API_BASE_URL.replace(/\/api$/, '');
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
