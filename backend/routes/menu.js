@@ -30,13 +30,13 @@ if (hasCloudinary) {
       cloudinary: cloudinary,
       params: {
         folder: 'restaurant-pos-menu',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'gif']
+        allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp']
       },
     });
 
     upload = multer({
       storage: cloudStorage,
-      limits: { fileSize: 5 * 1024 * 1024 }
+      limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
     });
     
     console.log('Image upload: Using Cloudinary storage');
@@ -44,9 +44,7 @@ if (hasCloudinary) {
     console.warn('Cloudinary setup failed, falling back to local storage:', err.message);
     hasCloudinary && setupLocalStorage();
   }
-}
-
-if (!upload) {
+} else {
   setupLocalStorage();
 }
 
@@ -69,7 +67,7 @@ function setupLocalStorage() {
 
   upload = multer({
     storage: localStorage,
-    limits: { fileSize: 5 * 1024 * 1024 },
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
     fileFilter: (req, file, cb) => {
       const allowedTypes = /jpeg|jpg|png|gif|webp/;
       const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
@@ -89,9 +87,7 @@ function setupLocalStorage() {
 const handleUpload = (req, res, next) => {
   upload.single('image')(req, res, (err) => {
     if (err) {
-      // If upload fails, continue without image
-      console.warn('Image upload error (continuing without image):', err.message);
-      req.file = null;
+      return res.status(400).json({ error: 'Image upload failed: ' + err.message });
     }
     next();
   });
