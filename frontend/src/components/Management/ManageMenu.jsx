@@ -92,11 +92,11 @@ const ManageMenu = () => {
                 <td>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <img 
-                      src={item.image ? (item.image.startsWith('http') || item.image.startsWith('data:') ? item.image : `${BACKEND_URL}${item.image}`) : '/placeholder-food.jpg'}
+                      src={item.image ? (item.image.startsWith('http') || item.image.startsWith('data:') ? item.image : `${BACKEND_URL}${item.image}`) : 'https://placehold.co/50x50/EAEAEA/888888?text=Food'}
                       alt={item.name}
                       style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }}
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/50x50?text=' + encodeURIComponent(item.name);
+                        e.target.src = 'https://placehold.co/50x50/EAEAEA/888888?text=' + encodeURIComponent(item.name.substring(0,2));
                       }}
                     />
                     <div style={{ fontWeight: 600 }}>{item.name}</div>

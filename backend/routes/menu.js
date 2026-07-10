@@ -8,10 +8,12 @@ const router = express.Router();
 
 let upload;
 
-// Check if Cloudinary is configured
-const hasCloudinary = process.env.CLOUDINARY_CLOUD_NAME && 
-                      process.env.CLOUDINARY_API_KEY && 
-                      process.env.CLOUDINARY_API_SECRET;
+// Check if Cloudinary is configured (or use fallbacks for Render if env is missing)
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'ny4yqvae';
+const apiKey = process.env.CLOUDINARY_API_KEY || '933718491499319';
+const apiSecret = process.env.CLOUDINARY_API_SECRET || 'X5vQB8ngIhGdGpCzwMNlWOp7wZw';
+
+const hasCloudinary = cloudName && apiKey && apiSecret;
 
 if (hasCloudinary) {
   try {
@@ -19,9 +21,9 @@ if (hasCloudinary) {
     const { CloudinaryStorage } = require('multer-storage-cloudinary');
     
     cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET
+      cloud_name: cloudName,
+      api_key: apiKey,
+      api_secret: apiSecret
     });
 
     const cloudStorage = new CloudinaryStorage({
