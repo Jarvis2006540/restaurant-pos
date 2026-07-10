@@ -65,7 +65,7 @@ const MonthlySales = () => {
             min="2020"
             max={new Date().getFullYear()}
             className="form-input"
-            style={{ width: '80px', border: 'none', background: 'var(--bg-color)' }}
+            style={{ width: '100px', border: 'none', background: 'var(--bg-color)' }}
           />
         </div>
       </div>

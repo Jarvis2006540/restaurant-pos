@@ -57,13 +57,19 @@ const Order = {
                 reject(err);
                 return;
               }
-              completed++;
-              if (completed === orderItems.length && !hasError) {
-                insertOrderItem.finalize((err) => {
-                  if (err) reject(err);
-                  else Order.getById(orderId).then(resolve).catch(reject);
-                });
-              }
+              
+              // Automatically reduce stock for items that have a finite stock limit
+              db.run('UPDATE menu SET stock_quantity = stock_quantity - ? WHERE id = ? AND stock_quantity > 0', [item.quantity, item.menu_id], (err) => {
+                if (err) console.error("Failed to update stock for item", item.menu_id);
+                
+                completed++;
+                if (completed === orderItems.length && !hasError) {
+                  insertOrderItem.finalize((err) => {
+                    if (err) reject(err);
+                    else Order.getById(orderId).then(resolve).catch(reject);
+                  });
+                }
+              });
             });
           });
         }
