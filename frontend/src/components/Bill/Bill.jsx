@@ -100,26 +100,28 @@ const Bill = () => {
               </div>
             )}
             
-            <table className="bill-items-table">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th className="text-center">Qty</th>
-                  <th className="text-right">Price</th>
-                  <th className="text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cartItems.map((item) => (
-                  <tr key={item.id}>
-                    <td className="bill-item-name">{item.name}</td>
-                    <td className="text-center">{item.quantity}</td>
-                    <td className="text-right">₹{item.price.toFixed(2)}</td>
-                    <td className="text-right">₹{item.subtotal.toFixed(2)}</td>
+            <div className="table-responsive">
+              <table className="bill-items-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th className="text-center">Qty</th>
+                    <th className="text-right">Price</th>
+                    <th className="text-right">Total</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {cartItems.map((item) => (
+                    <tr key={item.id}>
+                      <td className="bill-item-name">{item.name}</td>
+                      <td className="text-center">{item.quantity}</td>
+                      <td className="text-right">₹{item.price.toFixed(2)}</td>
+                      <td className="text-right">₹{item.subtotal.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
             <div className="bill-totals">
               <div className="bill-total-row">

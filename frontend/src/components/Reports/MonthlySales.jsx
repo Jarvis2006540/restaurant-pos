@@ -94,7 +94,7 @@ const MonthlySales = () => {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          <div className="reports-grid">
             {reportData.item_sales && reportData.item_sales.length > 0 && (
               <div className="card table-responsive">
                 <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Top Selling Items</h3>

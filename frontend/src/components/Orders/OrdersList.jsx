@@ -130,7 +130,7 @@ const OrdersList = () => {
           <p>{searchTerm || filterType !== 'all' ? 'Try adjusting your search or filter' : 'Orders will appear here once customers place them'}</p>
         </div>
       ) : (
-        <div className="orders-table-wrapper">
+        <div className="orders-table-wrapper table-responsive">
           <table className="orders-table">
             <thead>
               <tr>

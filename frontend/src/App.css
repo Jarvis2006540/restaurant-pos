@@ -1888,3 +1888,249 @@ textarea.form-control {
   }
 }
 
+
+
+/* ============================================
+   RESPONSIVENESS (TABLET & MOBILE)
+   ============================================ */
+
+/* TABLET (768px to 1024px) */
+@media screen and (max-width: 1024px) {
+  .cart-section {
+    width: 320px;
+  }
+  .menu-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+  .bill-container {
+    padding: 0 1rem;
+  }
+}
+
+/* MOBILE (< 768px) */
+@media screen and (max-width: 767px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  /* Bottom Navigation */
+  .sidebar {
+    width: 100%;
+    height: 70px;
+    flex-direction: row;
+    padding: 0;
+    border-right: none;
+    border-top: 1px solid var(--border-color);
+    order: 2; /* Move to bottom */
+    justify-content: space-around;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .sidebar-logo, .sidebar-user {
+    display: none;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+    height: 100%;
+  }
+
+  .nav-item {
+    width: auto;
+    flex: 1;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .sidebar-footer {
+    width: auto;
+    border-top: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sidebar-logout-btn {
+    width: 64px;
+    height: 100%;
+  }
+  
+  .sidebar-logout-btn span {
+    display: none;
+  }
+
+  /* Layout adjustments */
+  .main-content {
+    order: 1;
+    height: calc(100vh - 70px);
+  }
+
+  /* POS View Cart Button */
+  .mobile-cart-fab {
+    display: block;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 20px;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    z-index: 10;
+    cursor: pointer;
+  }
+
+  .fab-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .fab-badge {
+    background: white;
+    color: var(--primary-dark);
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+  
+  .fab-price {
+    font-weight: 700;
+  }
+
+  /* Cart Drawer */
+  .cart-section {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 85vh;
+    border-left: none;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    transform: translateY(100%);
+    z-index: 100;
+  }
+
+  .cart-section.open {
+    transform: translateY(0);
+  }
+
+  .mobile-cart-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--bg-color);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    z-index: 101;
+  }
+
+  .mobile-cart-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 99;
+    transition: opacity 0.3s;
+  }
+
+  .mobile-cart-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Menu Grid */
+  .menu-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+    padding-bottom: 80px; /* Space for FAB */
+  }
+
+  .menu-item-image {
+    height: 120px;
+  }
+
+  .menu-item-title {
+    font-size: 1rem;
+  }
+  
+  .menu-item-price {
+    font-size: 1.1rem;
+  }
+
+  /* Responsive Tables */
+  .page-container {
+    padding: 1rem;
+  }
+
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .admin-table {
+    min-width: 600px;
+  }
+
+  /* Bill/Checkout */
+  .payment-methods-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .bill-customer-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .bill-receipt-actions {
+    flex-direction: column;
+  }
+  
+  .bill-receipt-actions button {
+    width: 100%;
+  }
+
+  /* Modals */
+  .modal-content {
+    width: 95%;
+    max-height: 90vh;
+    padding: 1.5rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+  .reports-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  @media screen and (max-width: 767px) {
+    .reports-grid {
+      grid-template-columns: 1fr;
+    }
+  }
