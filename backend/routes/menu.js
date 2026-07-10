@@ -49,24 +49,10 @@ if (!upload) {
 }
 
 function setupLocalStorage() {
-  // Ensure uploads directory exists
-  const uploadsDir = path.join(__dirname, '..', 'uploads');
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-  }
-
-  const localStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, uploadsDir);
-    },
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
-  });
+  const memoryStorage = multer.memoryStorage();
 
   upload = multer({
-    storage: localStorage,
+    storage: memoryStorage,
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
       const allowedTypes = /jpeg|jpg|png|gif|webp/;
@@ -80,7 +66,7 @@ function setupLocalStorage() {
     }
   });
   
-  console.log('Image upload: Using local disk storage');
+  console.log('Image upload: Using memory storage for Base64 encoding');
 }
 
 // Middleware to handle multer errors gracefully

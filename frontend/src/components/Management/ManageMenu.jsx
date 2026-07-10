@@ -92,7 +92,7 @@ const ManageMenu = () => {
                 <td>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <img 
-                      src={item.image ? (item.image.startsWith('http') ? item.image : `${BACKEND_URL}${item.image}`) : '/placeholder-food.jpg'}
+                      src={item.image ? (item.image.startsWith('http') || item.image.startsWith('data:') ? item.image : `${BACKEND_URL}${item.image}`) : '/placeholder-food.jpg'}
                       alt={item.name}
                       style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }}
                       onError={(e) => {

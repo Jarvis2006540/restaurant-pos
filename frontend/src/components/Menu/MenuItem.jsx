@@ -3,7 +3,7 @@ import { BACKEND_URL } from '../../services/api';
 
 const MenuItem = ({ item, onAddToCart }) => {
   const imageUrl = item.image 
-    ? (item.image.startsWith('http') ? item.image : `${BACKEND_URL}${item.image}`)
+    ? (item.image.startsWith('http') || item.image.startsWith('data:') ? item.image : `${BACKEND_URL}${item.image}`)
     : 'https://via.placeholder.com/400x300?text=' + encodeURIComponent(item.name);
 
   return (
