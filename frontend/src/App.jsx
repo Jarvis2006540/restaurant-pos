@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Menu } from 'lucide-react';
 import Sidebar from './components/Layout/Sidebar';
 import POSView from './components/POS/POSView';
 import Bill from './components/Bill/Bill';
@@ -14,6 +15,7 @@ import './App.css';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('pos_token'));
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('pos_user') || 'null'));
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const handleLogin = (userData) => {
     setIsAuthenticated(true);
@@ -40,7 +42,23 @@ function App() {
   return (
     <Router>
       <div className="app-layout">
-        <Sidebar onLogout={handleLogout} user={user} />
+        
+        {/* Mobile Top Header */}
+        <div className="mobile-top-header">
+          <button className="mobile-menu-btn" onClick={() => setIsMobileSidebarOpen(true)}>
+            <Menu size={24} />
+          </button>
+          <div className="mobile-header-title">POS System</div>
+        </div>
+        
+        {/* Sidebar Overlay */}
+        <div 
+          className={`mobile-sidebar-overlay ${isMobileSidebarOpen ? 'open' : ''}`} 
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+        
+        <Sidebar onLogout={handleLogout} user={user} isOpen={isMobileSidebarOpen} onClose={() => setIsMobileSidebarOpen(false)} />
+  
         <main className="main-content">
           <Routes>
             <Route path="/" element={<POSView />} />

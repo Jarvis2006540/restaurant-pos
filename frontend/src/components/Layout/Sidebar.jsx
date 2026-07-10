@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ReceiptText, UtensilsCrossed, BarChart3, Settings, LogOut, User, SlidersHorizontal } from 'lucide-react';
+import { LayoutDashboard, ReceiptText, UtensilsCrossed, BarChart3, Settings, LogOut, User, SlidersHorizontal, X } from 'lucide-react';
 
-const Sidebar = ({ onLogout, user }) => {
+const Sidebar = ({ onLogout, user, isOpen, onClose }) => {
   const location = useLocation();
 
   const isActive = (path) => {
@@ -10,29 +10,30 @@ const Sidebar = ({ onLogout, user }) => {
   };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <button className="mobile-sidebar-close" onClick={onClose}><X size={24} /></button>
       <div className="sidebar-logo">
         <img src="/images/logo.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
       </div>
       
       <nav className="sidebar-nav">
-        <Link to="/" className={`nav-item ${isActive('/')}`}>
+        <Link onClick={onClose} to="/" className={`nav-item ${isActive('/')}`}>
           <LayoutDashboard size={24} />
           <span>POS</span>
         </Link>
-        <Link to="/orders" className={`nav-item ${isActive('/orders')}`}>
+        <Link onClick={onClose} to="/orders" className={`nav-item ${isActive('/orders')}`}>
           <ReceiptText size={24} />
           <span>Orders</span>
         </Link>
-        <Link to="/manage" className={`nav-item ${isActive('/manage')}`}>
+        <Link onClick={onClose} to="/manage" className={`nav-item ${isActive('/manage')}`}>
           <UtensilsCrossed size={24} />
           <span>Menu</span>
         </Link>
-        <Link to="/reports" className={`nav-item ${isActive('/reports')}`}>
+        <Link onClick={onClose} to="/reports" className={`nav-item ${isActive('/reports')}`}>
           <BarChart3 size={24} />
           <span>Reports</span>
         </Link>
-        <Link to="/settings" className={`nav-item ${isActive('/settings')}`}>
+        <Link onClick={onClose} to="/settings" className={`nav-item ${isActive('/settings')}`}>
           <Settings size={24} />
           <span>Settings</span>
         </Link>

@@ -1907,69 +1907,158 @@ textarea.form-control {
   }
 }
 
+
+
 /* MOBILE (< 768px) */
 @media screen and (max-width: 767px) {
   .app-layout {
     flex-direction: column;
+    overflow: hidden; 
+    width: 100vw;
   }
 
-  /* Bottom Navigation */
+  /* Mobile Top Header */
+  .mobile-top-header {
+    display: flex;
+    align-items: center;
+    height: 60px;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 1rem;
+    gap: 1rem;
+    z-index: 10;
+  }
+  
+  .mobile-menu-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    margin-left: -0.5rem;
+  }
+  
+  .mobile-header-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--primary-dark);
+  }
+
+  /* Main content pushed down by header */
+  .main-content {
+    order: 1;
+    height: calc(100vh - 60px);
+    width: 100vw;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  
+  .page-container {
+    padding: 1rem;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* Sidebar styling for mobile hamburger */
   .sidebar {
-    width: 100%;
-    height: 70px;
-    flex-direction: row;
-    padding: 0;
-    border-right: none;
-    border-top: 1px solid var(--border-color);
-    order: 2; /* Move to bottom */
-    justify-content: space-around;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
   }
 
-  .sidebar-logo, .sidebar-user {
-    display: none;
+  .mobile-sidebar-close {
+    display: flex;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
   }
 
-  .sidebar-nav {
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-around;
-    height: 100%;
+  .mobile-sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 999;
+    transition: opacity 0.3s;
   }
 
+  .mobile-sidebar-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Re-enable text and logo in sidebar since it's a drawer now */
+  .sidebar-logo {
+    margin-bottom: 2rem;
+    max-width: 150px;
+  }
+  
   .nav-item {
-    width: auto;
-    flex: 1;
-    height: 100%;
-    border-radius: 0;
+    flex-direction: row;
+    width: 100%;
+    height: auto;
+    padding: 1rem;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+  
+  .nav-item span {
+    opacity: 1;
+    transform: none;
+    font-size: 1rem;
   }
 
   .sidebar-footer {
-    width: auto;
-    border-top: none;
-    padding: 0;
-    margin: 0;
+    padding: 1rem;
   }
-
+  
   .sidebar-logout-btn {
-    width: 64px;
-    height: 100%;
+    width: 100%;
+    justify-content: center;
   }
   
   .sidebar-logout-btn span {
-    display: none;
+    display: block;
   }
 
-  /* Layout adjustments */
-  .main-content {
-    order: 1;
-    height: calc(100vh - 70px);
+  /* Fix Section Header Overlap */
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem;
+  }
+  
+  .section-header button {
+    align-self: flex-start;
   }
 
   /* POS View Cart Button */
   .mobile-cart-fab {
     display: block;
-    position: absolute;
+    position: fixed;
     bottom: 20px;
     right: 20px;
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -2008,13 +2097,15 @@ textarea.form-control {
     bottom: 0;
     left: 0;
     right: 0;
-    width: 100%;
+    width: 100vw;
     height: 85vh;
     border-left: none;
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
     transform: translateY(100%);
     z-index: 100;
+    background: var(--bg-panel);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
   }
 
   .cart-section.open {
@@ -2077,19 +2168,21 @@ textarea.form-control {
   }
 
   /* Responsive Tables */
-  .page-container {
-    padding: 1rem;
-  }
-
   .table-responsive {
     width: 100%;
+    max-width: 100vw;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
   }
+  
+  /* Ensure parent containers don't force stretch */
+  .orders-table-wrapper, .card {
+    max-width: 100vw;
+  }
 
-  .admin-table {
+  .admin-table, .orders-table, .data-table {
     min-width: 600px;
   }
 
@@ -2121,16 +2214,30 @@ textarea.form-control {
   .form-grid {
     grid-template-columns: 1fr;
   }
+  
+  /* Fix settings forms specifically */
+  .settings-section .form-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
-  .reports-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-  }
+/* Tablet / Desktop fixes */
+.mobile-top-header, .mobile-sidebar-close, .mobile-sidebar-overlay {
+  display: none;
+}
 
-  @media screen and (max-width: 767px) {
-    .reports-grid {
-      grid-template-columns: 1fr;
-    }
+@media screen and (max-width: 767px) {
+  .mobile-top-header { display: flex; }
+}
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media screen and (max-width: 767px) {
+  .reports-grid {
+    grid-template-columns: 1fr;
   }
+}
