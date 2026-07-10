@@ -59,7 +59,11 @@ const OrdersList = () => {
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '-';
-    const d = new Date(dateStr);
+    // Ensure SQLite UTC dates (e.g. "2026-07-10 05:16:00") are parsed as UTC
+    const normalized = dateStr.includes('Z') || dateStr.includes('T') 
+      ? dateStr 
+      : dateStr.replace(' ', 'T') + 'Z';
+    const d = new Date(normalized);
     return d.toLocaleDateString('en-IN', { 
       day: '2-digit', month: 'short', year: 'numeric' 
     });
@@ -67,7 +71,11 @@ const OrdersList = () => {
 
   const formatTime = (dateStr) => {
     if (!dateStr) return '';
-    const d = new Date(dateStr);
+    // Ensure SQLite UTC dates are parsed as UTC
+    const normalized = dateStr.includes('Z') || dateStr.includes('T') 
+      ? dateStr 
+      : dateStr.replace(' ', 'T') + 'Z';
+    const d = new Date(normalized);
     return d.toLocaleTimeString('en-IN', { 
       hour: '2-digit', minute: '2-digit', hour12: true 
     });

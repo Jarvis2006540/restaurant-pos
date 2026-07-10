@@ -47,7 +47,7 @@ const PrintBill = ({ order, cart, total, metadata, paymentMethod, settings }) =>
           </div>
           <div className="receipt-info-row">
             <span>Date:</span>
-            <span>{new Date(order.created_at).toLocaleString('en-IN', { 
+            <span>{new Date(order.created_at.includes('Z') || order.created_at.includes('T') ? order.created_at : order.created_at.replace(' ', 'T') + 'Z').toLocaleString('en-IN', { 
               day: '2-digit', month: '2-digit', year: 'numeric',
               hour: '2-digit', minute: '2-digit', hour12: true 
             })}</span>

@@ -1811,48 +1811,16 @@ textarea.form-control {
 /* ============================================
    PRINT MEDIA
    ============================================ */
+/* ============================================
+   PRINT MEDIA
+   ============================================ */
 @media print {
-  /* Hide everything by default */
-  body * {
-    visibility: hidden;
-  }
-
-  /* Show only the print-bill content */
-  #print-bill,
-  #print-bill * {
-    visibility: visible !important;
-  }
-
-  /* Position the receipt at top-left for printing */
-  #print-bill {
-    position: fixed !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 80mm !important;
-    max-width: 80mm !important;
-    margin: 0 !important;
-    padding: 3mm !important;
-    z-index: 99999 !important;
-    background: white !important;
-    color: black !important;
-  }
-
-  /* Reset the thermal receipt inside */
-  #print-bill .thermal-receipt {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    font-family: 'Courier New', Courier, monospace !important;
-    background: white !important;
-    color: black !important;
-  }
-
-  /* Force hide these elements */
+  /* Hide all UI elements that shouldn't print */
   .sidebar,
+  .orders-toolbar,
+  .orders-header,
+  .orders-table-wrapper,
+  .orders-empty,
   .receipt-modal-header,
   .receipt-modal-footer,
   .bill-receipt-actions,
@@ -1860,35 +1828,50 @@ textarea.form-control {
   .bill-summary-card,
   .bill-payment-section,
   .btn-back-link,
+  .mobile-cart-fab,
   .no-print {
     display: none !important;
-    visibility: hidden !important;
   }
 
-  /* Reset body and main content for print */
-  body {
-    background: white !important;
+  /* Reset layout containers so they don't interfere with the receipt positioning */
+  body, html, #root, .App, .app-layout, .main-content, .page-container, .orders-page, .bill-page {
+    display: block !important;
+    height: auto !important;
+    width: 100% !important;
     overflow: visible !important;
     margin: 0 !important;
     padding: 0 !important;
+    background: white !important;
   }
 
-  .app-layout,
-  .main-content,
-  .bill-page,
-  .bill-container,
+  /* Reset modal containers so they don't center the receipt or add backgrounds */
   .receipt-modal-overlay,
   .receipt-modal,
   .receipt-modal-body,
   .print-bill-wrapper {
     position: static !important;
-    overflow: visible !important;
-    width: auto !important;
+    display: block !important;
+    width: 100% !important;
     height: auto !important;
     max-height: none !important;
     margin: 0 !important;
     padding: 0 !important;
-    background: transparent !important;
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  /* The actual receipt formatting */
+  #print-bill, .thermal-receipt {
+    display: block !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+    font-family: 'Courier New', Courier, monospace !important;
     border: none !important;
     box-shadow: none !important;
   }
