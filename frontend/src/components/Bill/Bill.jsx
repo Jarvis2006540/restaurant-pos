@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ordersAPI } from '../../services/api';
+import React, { useState, useEffect } from 'react';
+import { ordersAPI, settingsAPI } from '../../services/api';
 import QRCodePayment from '../Payment/QRCodePayment';
 import PrintBill from './PrintBill';
 import { ArrowLeft, Printer, Banknote, QrCode, CreditCard, CheckCircle2, Loader2 } from 'lucide-react';
@@ -17,6 +17,14 @@ const Bill = () => {
   const [showQRCode, setShowQRCode] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [receiptSettings, setReceiptSettings] = useState(null);
+
+  useEffect(() => {
+    // Fetch receipt settings when component mounts
+    settingsAPI.get().then(res => {
+      if (res.data) setReceiptSettings(res.data);
+    }).catch(err => console.error("Failed to load receipt settings:", err));
+  }, []);
 
   const handleSelectPayment = async (method) => {
     setPaymentMethod(method);
@@ -116,21 +124,21 @@ const Bill = () => {
             <div className="bill-totals">
               <div className="bill-total-row">
                 <span>Subtotal</span>
-                <span>₹{(metadata.subtotal || cartTotal).toFixed(2)}</span>
+                <span>₹{Number(metadata.subtotal || cartTotal).toFixed(2)}</span>
               </div>
               {metadata.discount_amount > 0 && (
                 <div className="bill-total-row bill-discount">
-                  <span>Discount ({((metadata.discount_amount / (metadata.subtotal || cartTotal)) * 100).toFixed(0)}%)</span>
-                  <span>-₹{metadata.discount_amount.toFixed(2)}</span>
+                  <span>Discount ({((Number(metadata.discount_amount) / Number(metadata.subtotal || cartTotal)) * 100).toFixed(0)}%)</span>
+                  <span>-₹{Number(metadata.discount_amount).toFixed(2)}</span>
                 </div>
               )}
               <div className="bill-total-row">
                 <span>Tax (GST)</span>
-                <span>₹{(metadata.tax_amount || 0).toFixed(2)}</span>
+                <span>₹{Number(metadata.tax_amount || 0).toFixed(2)}</span>
               </div>
               <div className="bill-total-row bill-grand-total">
                 <span>Grand Total</span>
-                <span>₹{(metadata.grand_total || cartTotal).toFixed(2)}</span>
+                <span>₹{Number(metadata.grand_total || cartTotal).toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -213,6 +221,7 @@ const Bill = () => {
             metadata={metadata} 
             total={metadata.grand_total || cartTotal}
             paymentMethod={paymentMethod}
+            settings={receiptSettings}
           />
 
           <div className="bill-receipt-actions">

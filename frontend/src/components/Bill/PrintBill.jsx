@@ -1,7 +1,7 @@
 import React from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 
-const PrintBill = ({ order, cart, total, metadata, paymentMethod }) => {
+const PrintBill = ({ order, cart, total, metadata, paymentMethod, settings }) => {
   if (!order) return null;
 
   // Use items from order if cart not provided (for reprint from orders page)
@@ -14,47 +14,27 @@ const PrintBill = ({ order, cart, total, metadata, paymentMethod }) => {
   const discountAmount = metadata?.discount_amount ?? order.discount_amount ?? 0;
   const subtotal = metadata?.subtotal ?? order.subtotal ?? orderTotal;
 
-  const upiId = 'cssurya2006@okicici';
-  const payeeName = 'Restaurant';
-  const upiUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${orderTotal.toFixed(2)}&cu=INR&tn=Order%20${order.order_number}`;
+  // Use dynamic settings or fallbacks
+  const shopName = settings?.shop_name || 'THE GRAND RESTAURANT';
+  const shopAddress = settings?.address || '123 Food Street, City, 10001';
+  const shopPhone = settings?.phone || '+91 98765 43210';
+  const shopGstin = settings?.gstin || '33AABCU9603R1ZM';
+  const upiId = settings?.upi_id || 'merchant@upi';
+  const payeeName = settings?.payee_name || 'Restaurant';
+  const thankYouNote = settings?.thank_you_note || 'Thank you for your visit!';
+  const visitAgainNote = settings?.visit_again_note || 'Please visit again';
+
+  const upiUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${Number(orderTotal).toFixed(2)}&cu=INR&tn=Order%20${order.order_number}`;
 
   return (
-    <div className="print-bill" id="print-bill">
-      <style>
-        {`
-          @media print {
-            body * { visibility: hidden !important; }
-            #print-bill, #print-bill * { visibility: visible !important; }
-            #print-bill { 
-              position: absolute; 
-              left: 0; 
-              top: 0; 
-              width: 80mm; 
-              font-family: 'Courier New', Courier, monospace;
-              padding: 5mm;
-              margin: 0 auto;
-              background: #fff !important;
-              color: #000 !important;
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
-            }
-            .bill-receipt-actions,
-            .bill-success-banner,
-            .sidebar,
-            .no-print { 
-              display: none !important; 
-            }
-          }
-        `}
-      </style>
-      
+    <div className="print-bill-wrapper" id="print-bill">
       <div className="thermal-receipt">
         {/* Header */}
         <div className="receipt-center">
-          <h2 className="receipt-shop-name">THE GRAND RESTAURANT</h2>
-          <p className="receipt-address">123 Food Street, City, 10001</p>
-          <p className="receipt-phone">Ph: +91 98765 43210</p>
-          <p className="receipt-gstin">GSTIN: 33AABCU9603R1ZM</p>
+          <h2 className="receipt-shop-name">{shopName}</h2>
+          {shopAddress && <p className="receipt-address" style={{ whiteSpace: 'pre-line' }}>{shopAddress}</p>}
+          {shopPhone && <p className="receipt-phone">Ph: {shopPhone}</p>}
+          {shopGstin && <p className="receipt-gstin">GSTIN: {shopGstin}</p>}
         </div>
         
         <div className="receipt-divider"></div>
@@ -132,26 +112,26 @@ const PrintBill = ({ order, cart, total, metadata, paymentMethod }) => {
             <>
               <div className="receipt-total-row">
                 <span>Subtotal:</span>
-                <span>{subtotal.toFixed(2)}</span>
+                <span>{Number(subtotal).toFixed(2)}</span>
               </div>
               <div className="receipt-total-row">
                 <span>Discount:</span>
-                <span>-{discountAmount.toFixed(2)}</span>
+                <span>-{Number(discountAmount).toFixed(2)}</span>
               </div>
             </>
           )}
           <div className="receipt-total-row">
             <span>CGST:</span>
-            <span>{(taxAmount / 2).toFixed(2)}</span>
+            <span>{(Number(taxAmount) / 2).toFixed(2)}</span>
           </div>
           <div className="receipt-total-row">
             <span>SGST:</span>
-            <span>{(taxAmount / 2).toFixed(2)}</span>
+            <span>{(Number(taxAmount) / 2).toFixed(2)}</span>
           </div>
           <div className="receipt-divider-thin"></div>
           <div className="receipt-total-row receipt-grand-total">
             <span>GRAND TOTAL:</span>
-            <span>₹{orderTotal.toFixed(2)}</span>
+            <span>₹{Number(orderTotal).toFixed(2)}</span>
           </div>
         </div>
         
@@ -173,8 +153,8 @@ const PrintBill = ({ order, cart, total, metadata, paymentMethod }) => {
         
         {/* Footer */}
         <div className="receipt-center receipt-footer">
-          <p className="receipt-thank-you">Thank you for your visit!</p>
-          <p className="receipt-visit-again">Please visit again</p>
+          {thankYouNote && <p className="receipt-thank-you">{thankYouNote}</p>}
+          {visitAgainNote && <p className="receipt-visit-again">{visitAgainNote}</p>}
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ import Bill from './components/Bill/Bill';
 import OrdersList from './components/Orders/OrdersList';
 import ManageMenu from './components/Management/ManageMenu';
 import MonthlySales from './components/Reports/MonthlySales';
+import ReceiptSettings from './components/Settings/ReceiptSettings';
 import Login from './components/Auth/Login';
 import './index.css';
 import './App.css';
@@ -47,6 +48,7 @@ function App() {
             <Route path="/orders" element={<OrdersList />} />
             <Route path="/manage" element={<ManageMenu />} />
             <Route path="/reports" element={<MonthlySales />} />
+            <Route path="/settings" element={<ReceiptSettings />} />
           </Routes>
         </main>
       </div>

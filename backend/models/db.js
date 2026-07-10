@@ -204,6 +204,32 @@ function initializeDatabase() {
       seedDefaultMenuItems();
     }
   });
+
+  // Settings table for Receipt/Shop settings
+  db.run(`
+    CREATE TABLE IF NOT EXISTS settings (
+      id INTEGER PRIMARY KEY DEFAULT 1,
+      shop_name TEXT DEFAULT 'THE GRAND RESTAURANT',
+      address TEXT DEFAULT '123 Food Street, City, 10001',
+      phone TEXT DEFAULT '+91 98765 43210',
+      gstin TEXT DEFAULT '33AABCU9603R1ZM',
+      upi_id TEXT DEFAULT 'merchant@upi',
+      payee_name TEXT DEFAULT 'Restaurant',
+      thank_you_note TEXT DEFAULT 'Thank you for your visit!',
+      visit_again_note TEXT DEFAULT 'Please visit again',
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      CHECK (id = 1) -- Ensure only one row exists
+    )
+  `, (err) => {
+    if (err) console.error('Error creating settings table:', err);
+    else {
+      db.get('SELECT COUNT(*) as count FROM settings', (err, row) => {
+        if (!err && row.count === 0) {
+          db.run("INSERT INTO settings (id) VALUES (1)");
+        }
+      });
+    }
+  });
 }
 
 function seedDefaultMenuItems() {

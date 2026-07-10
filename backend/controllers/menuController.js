@@ -30,7 +30,12 @@ const menuController = {
       let imagePath = null;
 
       if (req.file) {
-        imagePath = req.file.path; // Cloudinary URL
+        // Cloudinary returns full URL in path, local storage returns filename
+        if (req.file.path && req.file.path.startsWith('http')) {
+          imagePath = req.file.path; // Cloudinary URL
+        } else {
+          imagePath = '/uploads/' + req.file.filename; // Local path
+        }
       } else if (req.body.image) {
         imagePath = req.body.image;
       }
@@ -67,8 +72,12 @@ const menuController = {
       let imagePath = existingMenu.image;
 
       if (req.file) {
-        imagePath = req.file.path; // Cloudinary URL
-      } else if (req.body.image !== undefined) {
+        if (req.file.path && req.file.path.startsWith('http')) {
+          imagePath = req.file.path; // Cloudinary URL
+        } else {
+          imagePath = '/uploads/' + req.file.filename; // Local path
+        }
+      } else if (req.body.image !== undefined && req.body.image !== 'null') {
         imagePath = req.body.image;
       }
 
@@ -97,9 +106,6 @@ const menuController = {
       if (!menu) {
         return res.status(404).json({ error: 'Menu item not found' });
       }
-
-      // Note: We don't delete images from Cloudinary in this simple setup
-      // to avoid storing the public_id separately, but you could add that later.
 
       await Menu.delete(id);
       res.json({ message: 'Menu item deleted successfully' });

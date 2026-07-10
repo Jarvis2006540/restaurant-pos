@@ -1812,24 +1812,96 @@ textarea.form-control {
    PRINT MEDIA
    ============================================ */
 @media print {
+  /* Hide everything by default */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Show only the print-bill content */
+  #print-bill,
+  #print-bill * {
+    visibility: visible !important;
+  }
+
+  /* Position the receipt at top-left for printing */
+  #print-bill {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 !important;
+    padding: 3mm !important;
+    z-index: 99999 !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Reset the thermal receipt inside */
+  #print-bill .thermal-receipt {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Force hide these elements */
   .sidebar,
-  .bill-page > *:not(#print-bill):not(.bill-container),
-  .bill-summary-card,
-  .bill-payment-section,
-  .bill-success-banner,
-  .bill-receipt-actions,
-  .orders-page,
+  .receipt-modal-overlay,
   .receipt-modal-header,
   .receipt-modal-footer,
+  .bill-receipt-actions,
+  .bill-success-banner,
+  .bill-summary-card,
+  .bill-payment-section,
+  .btn-back-link,
   .no-print {
     display: none !important;
+    visibility: hidden !important;
   }
 
-  .main-content {
-    overflow: visible !important;
-  }
-
+  /* Reset body and main content for print */
   body {
     background: white !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .app-layout,
+  .main-content,
+  .bill-page,
+  .bill-container,
+  .receipt-modal,
+  .receipt-modal-body,
+  .print-bill-wrapper {
+    position: static !important;
+    overflow: visible !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Make sure the receipt dashed borders print */
+  .receipt-divider {
+    border-bottom: 1px dashed #000 !important;
+  }
+
+  /* Hide page headers/footers in print */
+  @page {
+    margin: 0;
+    size: 80mm auto;
   }
 }
+

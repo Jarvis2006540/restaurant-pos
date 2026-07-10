@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ReceiptText, UtensilsCrossed, BarChart3, Settings, LogOut, User } from 'lucide-react';
+import { LayoutDashboard, ReceiptText, UtensilsCrossed, BarChart3, Settings, LogOut, User, SlidersHorizontal } from 'lucide-react';
 
 const Sidebar = ({ onLogout, user }) => {
   const location = useLocation();
@@ -12,7 +12,7 @@ const Sidebar = ({ onLogout, user }) => {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <UtensilsCrossed size={24} />
+        <img src="/images/logo.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
       </div>
       
       <nav className="sidebar-nav">
@@ -25,12 +25,16 @@ const Sidebar = ({ onLogout, user }) => {
           <span>Orders</span>
         </Link>
         <Link to="/manage" className={`nav-item ${isActive('/manage')}`}>
-          <Settings size={24} />
-          <span>Manage</span>
+          <UtensilsCrossed size={24} />
+          <span>Menu</span>
         </Link>
         <Link to="/reports" className={`nav-item ${isActive('/reports')}`}>
           <BarChart3 size={24} />
           <span>Reports</span>
+        </Link>
+        <Link to="/settings" className={`nav-item ${isActive('/settings')}`}>
+          <Settings size={24} />
+          <span>Settings</span>
         </Link>
       </nav>
 

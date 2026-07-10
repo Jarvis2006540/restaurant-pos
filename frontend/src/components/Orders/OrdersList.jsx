@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ordersAPI } from '../../services/api';
+import { ordersAPI, settingsAPI } from '../../services/api';
 import PrintBill from '../Bill/PrintBill';
 import { Loader2, Search, Eye, Printer, X, ReceiptText, Calendar, Filter, ChevronDown } from 'lucide-react';
 
@@ -10,9 +10,14 @@ const OrdersList = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showReceipt, setShowReceipt] = useState(false);
   const [filterType, setFilterType] = useState('all'); // all, dine-in, takeaway
+  const [receiptSettings, setReceiptSettings] = useState(null);
 
   useEffect(() => {
     fetchOrders();
+    // Fetch receipt settings
+    settingsAPI.get().then(res => {
+      if (res.data) setReceiptSettings(res.data);
+    }).catch(err => console.error("Failed to load receipt settings:", err));
   }, []);
 
   const fetchOrders = async () => {
@@ -172,7 +177,7 @@ const OrdersList = () => {
                       </span>
                     </td>
                     <td className="text-right">
-                      <span className="order-total">₹{displayTotal.toFixed(2)}</span>
+                      <span className="order-total">₹{Number(displayTotal).toFixed(2)}</span>
                     </td>
                     <td className="text-center">
                       <div className="order-actions">
@@ -219,6 +224,7 @@ const OrdersList = () => {
                 }}
                 total={selectedOrder.grand_total || selectedOrder.total_amount}
                 paymentMethod={selectedOrder.payment_method_display || selectedOrder.payment_method}
+                settings={receiptSettings}
               />
             </div>
             <div className="receipt-modal-footer">
