@@ -21,13 +21,11 @@ const Cart = ({ cartItems, total, onCartUpdate, onCheckout }) => {
 
 
   const handleClearCart = async () => {
-    if (window.confirm('Clear all items from the cart?')) {
-      try {
-        await cartAPI.clear();
-        onCartUpdate();
-      } catch (err) {
-        alert('Failed to clear cart: ' + err.message);
-      }
+    try {
+      await cartAPI.clear();
+      onCartUpdate();
+    } catch (err) {
+      alert('Failed to clear cart: ' + err.message);
     }
   };
 

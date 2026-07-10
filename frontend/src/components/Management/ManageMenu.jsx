@@ -25,13 +25,11 @@ const ManageMenu = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this menu item?')) {
-      try {
-        await menuAPI.delete(id);
-        fetchMenu();
-      } catch (err) {
-        alert('Failed to delete item: ' + err.message);
-      }
+    try {
+      await menuAPI.delete(id);
+      fetchMenu();
+    } catch (err) {
+      alert('Failed to delete item: ' + err.message);
     }
   };
 
