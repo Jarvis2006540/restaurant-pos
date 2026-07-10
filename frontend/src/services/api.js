@@ -49,6 +49,7 @@ export const ordersAPI = {
   getById: (id) => api.get(`/orders/${id}`),
   getByNumber: (orderNumber) => api.get(`/orders/number/${orderNumber}`),
   getAll: () => api.get('/orders/all'),
+  delete: (id) => api.delete(`/orders/${id}`),
 };
 
 // Reports API

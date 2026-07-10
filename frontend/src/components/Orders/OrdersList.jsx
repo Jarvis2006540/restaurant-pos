@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ordersAPI, settingsAPI } from '../../services/api';
 import PrintBill from '../Bill/PrintBill';
-import { Loader2, Search, Eye, Printer, X, ReceiptText, Calendar, Filter, ChevronDown } from 'lucide-react';
+import { Loader2, Search, Eye, Printer, X, ReceiptText, Calendar, Filter, ChevronDown, Trash } from 'lucide-react';
 
 const OrdersList = () => {
   const [orders, setOrders] = useState([]);
@@ -11,6 +11,7 @@ const OrdersList = () => {
   const [showReceipt, setShowReceipt] = useState(false);
   const [filterType, setFilterType] = useState('all'); // all, dine-in, takeaway
   const [receiptSettings, setReceiptSettings] = useState(null);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -40,6 +41,15 @@ const OrdersList = () => {
     window.print();
   };
 
+  const handleDeleteOrder = async (orderId) => {
+    try {
+      await ordersAPI.delete(orderId);
+      fetchOrders();
+    } catch (err) {
+      console.error('Failed to delete order:', err);
+    }
+  };
+
   const handleCloseReceipt = () => {
     setSelectedOrder(null);
     setShowReceipt(false);
@@ -56,6 +66,8 @@ const OrdersList = () => {
     
     return matchesSearch && matchesFilter;
   });
+
+  const displayOrders = showAll ? filteredOrders : filteredOrders.slice(0, 5);
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '-';
@@ -145,7 +157,7 @@ const OrdersList = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.map((order) => {
+              {displayOrders.map((order) => {
                 const items = Array.isArray(order.items) ? order.items : [];
                 const displayTotal = order.grand_total || order.total_amount || 0;
                 return (
@@ -196,6 +208,13 @@ const OrdersList = () => {
                         >
                           <Eye size={16} />
                         </button>
+                        <button 
+                          className="order-action-btn delete"
+                          onClick={() => handleDeleteOrder(order.id)}
+                          title="Delete Order"
+                        >
+                          <Trash size={16} />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -203,6 +222,18 @@ const OrdersList = () => {
               })}
             </tbody>
           </table>
+        </div>
+      )}
+      
+      {!showAll && filteredOrders.length > 5 && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem' }}>
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => setShowAll(true)}
+            style={{ padding: '0.75rem 2rem', fontWeight: 600, border: '1px solid var(--primary)', color: 'var(--primary)' }}
+          >
+            View All Orders
+          </button>
         </div>
       )}
 

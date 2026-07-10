@@ -195,4 +195,17 @@ const Order = {
   }
 };
 
+  delete: async (id) => {
+    return new Promise((resolve, reject) => {
+      db.run('DELETE FROM order_items WHERE order_id = ?', [id], function(err) {
+        if (err) return reject(err);
+        db.run('DELETE FROM orders WHERE id = ?', [id], function(err) {
+          if (err) return reject(err);
+          resolve({ changes: this.changes });
+        });
+      });
+    });
+  }
+};
+
 module.exports = Order;

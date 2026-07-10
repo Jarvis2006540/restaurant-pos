@@ -79,4 +79,17 @@ const orderController = {
   }
 };
 
+  deleteOrder: async (req, res) => {
+    try {
+      const result = await Order.delete(req.params.id);
+      if (result.changes === 0) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+      res.json({ message: 'Order deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+};
+
 module.exports = orderController;

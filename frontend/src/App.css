@@ -137,7 +137,7 @@
 
 .page-container {
   flex: 1;
-  padding: 1.5rem;
+  padding: 2rem;
   overflow-y: auto;
 }
 
@@ -452,7 +452,7 @@
    BILL / CHECKOUT PAGE
    ============================================ */
 .bill-page {
-  padding: 1.5rem;
+  padding: 2rem;
   overflow-y: auto;
   height: 100%;
 }
@@ -908,7 +908,7 @@
    ORDERS PAGE
    ============================================ */
 .orders-page {
-  padding: 1.5rem;
+  padding: 2rem;
   overflow-y: auto;
   height: 100%;
 }
@@ -1164,6 +1164,14 @@
 .order-action-btn.view {
   background: var(--primary-light);
   color: var(--primary-dark);
+}
+.order-action-btn.delete {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+.order-action-btn.delete:hover {
+  background: var(--danger);
+  color: white;
 }
 .order-action-btn.view:hover {
   background: var(--primary);
@@ -2025,8 +2033,11 @@ textarea.form-control {
     gap: 1rem;
 }
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 1024px) {
   .reports-grid {
     grid-template-columns: 1fr;
+  }
+  .report-summary {
+    grid-template-columns: 1fr !important;
   }
 }
