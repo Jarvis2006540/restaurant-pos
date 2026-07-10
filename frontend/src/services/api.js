@@ -1,7 +1,12 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_REACT_APP_API_URL || 'https://restaurant-pos-backend-etv5.onrender.com/api';
+let API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_REACT_APP_API_URL || 'https://restaurant-pos-backend-etv5.onrender.com/api';
 
+// Foolproof check: if the Vercel environment variable is missing the /api suffix, append it
+if (API_BASE_URL && !API_BASE_URL.endsWith('/api') && !API_BASE_URL.endsWith('/api/')) {
+  // Remove trailing slash if exists before appending /api
+  API_BASE_URL = API_BASE_URL.replace(/\/$/, '') + '/api';
+}
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
