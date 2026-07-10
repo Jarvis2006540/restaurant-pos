@@ -59,9 +59,15 @@ const Menu = {
 
   delete: async (id) => {
     return new Promise((resolve, reject) => {
-      db.run('DELETE FROM menu WHERE id = ?', [id], (err) => {
-        if (err) reject(err);
-        else resolve();
+      // First delete associated order items to avoid foreign key constraint errors
+      db.run('DELETE FROM order_items WHERE menu_id = ?', [id], (err) => {
+        if (err) return reject(err);
+        
+        // Then delete the menu item itself
+        db.run('DELETE FROM menu WHERE id = ?', [id], (err2) => {
+          if (err2) reject(err2);
+          else resolve();
+        });
       });
     });
   }
