@@ -40,7 +40,7 @@ const MonthlySales = () => {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="section-header flex justify-between items-center mb-4">
         <div>
           <h2>Sales Dashboard</h2>
@@ -72,7 +72,7 @@ const MonthlySales = () => {
 
       {reportData && (
         <>
-          <div className="report-summary" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+          <div className="report-summary" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
             <div className="card flex items-center gap-4" style={{ marginBottom: 0 }}>
               <div style={{ background: 'var(--primary-light)', padding: '1rem', borderRadius: 'var(--radius-md)', color: 'var(--primary-dark)' }}>
                 <ShoppingBag size={32} />

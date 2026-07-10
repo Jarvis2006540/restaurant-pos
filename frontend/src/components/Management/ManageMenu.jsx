@@ -53,7 +53,7 @@ const ManageMenu = () => {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="section-header flex justify-between items-center mb-4">
         <div>
           <h2>Manage Menu</h2>

@@ -76,7 +76,7 @@ const ReceiptSettings = () => {
         <p>Customize the information printed on your thermal receipts</p>
       </div>
 
-      <div className="card" style={{ maxWidth: '800px' }}>
+      <div className="card">
         {message && (
           <div className={`bill-success-banner ${message.includes('Error') || message.includes('Failed') ? 'error' : ''}`} style={{ marginBottom: '1.5rem', ...(message.includes('Error') || message.includes('Failed') ? { background: '#fef2f2', borderColor: '#fecaca', color: '#991b1b' } : {}) }}>
             <strong>{message}</strong>

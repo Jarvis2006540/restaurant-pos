@@ -452,7 +452,7 @@
    BILL / CHECKOUT PAGE
    ============================================ */
 .bill-page {
-  padding: 2rem;
+  padding: 1.5rem;
   overflow-y: auto;
   height: 100%;
 }
@@ -908,7 +908,7 @@
    ORDERS PAGE
    ============================================ */
 .orders-page {
-  padding: 2rem;
+  padding: 1.5rem;
   overflow-y: auto;
   height: 100%;
 }
