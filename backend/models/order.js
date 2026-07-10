@@ -198,8 +198,7 @@ const Order = {
         }
       );
     });
-  }
-};
+  },
 
   delete: async (id) => {
     return new Promise((resolve, reject) => {

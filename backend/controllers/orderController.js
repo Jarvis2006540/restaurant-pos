@@ -76,8 +76,7 @@ const orderController = {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
-};
+  },
 
   deleteOrder: async (req, res) => {
     try {
