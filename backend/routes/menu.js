@@ -51,10 +51,24 @@ if (!upload) {
 }
 
 function setupLocalStorage() {
-  const memoryStorage = multer.memoryStorage();
+  // Use persistent volume path if on Fly.io, otherwise local uploads folder
+  const uploadsDir = process.env.STORAGE_PATH || path.join(__dirname, '..', 'uploads');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+
+  const localStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, uploadsDir);
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+  });
 
   upload = multer({
-    storage: memoryStorage,
+    storage: localStorage,
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
       const allowedTypes = /jpeg|jpg|png|gif|webp/;
@@ -68,7 +82,7 @@ function setupLocalStorage() {
     }
   });
   
-  console.log('Image upload: Using memory storage for Base64 encoding');
+  console.log('Image upload: Using local disk storage at ' + uploadsDir);
 }
 
 // Middleware to handle multer errors gracefully

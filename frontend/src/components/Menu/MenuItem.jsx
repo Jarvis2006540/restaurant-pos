@@ -4,7 +4,7 @@ import { BACKEND_URL } from '../../services/api';
 const MenuItem = ({ item, onAddToCart }) => {
   const imageUrl = item.image 
     ? (item.image.startsWith('http') || item.image.startsWith('data:') ? item.image : `${BACKEND_URL}${item.image}`)
-    : 'https://placehold.co/400x300/EAEAEA/888888?text=Food';
+    : `https://placehold.co/400x300/EAEAEA/888888?text=${encodeURIComponent(item.name.substring(0,6))}`;
 
   return (
     <div className="menu-item" onClick={() => onAddToCart(item.id)}>

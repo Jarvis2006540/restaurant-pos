@@ -30,13 +30,11 @@ const menuController = {
       let imagePath = null;
 
       if (req.file) {
-        // Cloudinary returns full URL in path, memory storage returns buffer
+        // Cloudinary returns full URL in path, local storage returns filename
         if (req.file.path && req.file.path.startsWith('http')) {
           imagePath = req.file.path; // Cloudinary URL
-        } else if (req.file.buffer) {
-          // Convert buffer to base64 data URI
-          const base64String = req.file.buffer.toString('base64');
-          imagePath = `data:${req.file.mimetype};base64,${base64String}`;
+        } else {
+          imagePath = '/uploads/' + req.file.filename; // Local path
         }
       } else if (req.body.image) {
         imagePath = req.body.image;
@@ -76,9 +74,8 @@ const menuController = {
       if (req.file) {
         if (req.file.path && req.file.path.startsWith('http')) {
           imagePath = req.file.path; // Cloudinary URL
-        } else if (req.file.buffer) {
-          const base64String = req.file.buffer.toString('base64');
-          imagePath = `data:${req.file.mimetype};base64,${base64String}`;
+        } else {
+          imagePath = '/uploads/' + req.file.filename; // Local path
         }
       } else if (req.body.image !== undefined && req.body.image !== 'null') {
         imagePath = req.body.image;

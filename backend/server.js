@@ -17,8 +17,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve uploaded images
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve uploaded images (from persistent volume on Fly.io, or local folder)
+const uploadsDir = process.env.STORAGE_PATH || path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadsDir));
 
 // API Routes
 app.use('/api/menu', menuRoutes);
