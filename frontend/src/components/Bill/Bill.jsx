@@ -1,61 +1,69 @@
-import React, { useState, useEffect } from 'react';
-import { cartAPI, ordersAPI } from '../../services/api';
+import React, { useState } from 'react';
+import { ordersAPI } from '../../services/api';
 import QRCodePayment from '../Payment/QRCodePayment';
 import PrintBill from './PrintBill';
-import { ArrowLeft, Printer } from 'lucide-react';
+import { ArrowLeft, Printer, Banknote, QrCode, CreditCard, CheckCircle2, Loader2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const Bill = ({ onOrderComplete }) => {
+const Bill = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const metadata = location.state?.metadata || {};
-  const [cart, setCart] = useState([]);
-  const [total, setTotal] = useState(0);
+  const cartItems = location.state?.cartItems || [];
+  const cartTotal = location.state?.cartTotal || 0;
+  
   const [order, setOrder] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState(null); // 'cash', 'upi', 'card'
   const [showQRCode, setShowQRCode] = useState(false);
-  const [showPrint, setShowPrint] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetchCart();
-  }, []);
-
-  const fetchCart = async () => {
+  const handleSelectPayment = async (method) => {
+    setPaymentMethod(method);
+    setLoading(true);
+    
     try {
-      const response = await cartAPI.get();
-      setCart(response.data.cart || []);
-      setTotal(response.data.total || 0);
-    } catch (err) {
-      console.error('Error fetching cart:', err);
-    }
-  };
-
-  const handlePayNow = async () => {
-    try {
-      const response = await ordersAPI.create('upi', metadata);
+      const orderData = {
+        payment_method: method,
+        payment_method_display: method === 'cash' ? 'Cash' : method === 'upi' ? 'UPI' : 'Card',
+        ...metadata,
+      };
+      
+      const response = await ordersAPI.create(orderData);
       setOrder(response.data);
-      setShowQRCode(true);
+      
+      if (method === 'upi') {
+        setShowQRCode(true);
+      } else {
+        // For cash & card, go directly to receipt
+        setShowReceipt(true);
+      }
     } catch (err) {
-      alert('Failed to create order: ' + err.message);
+      alert('Failed to create order: ' + (err.response?.data?.error || err.message));
+      setPaymentMethod(null);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handlePaymentConfirmed = () => {
-    setShowPrint(true);
-    setTimeout(() => {
-      if (onOrderComplete) {
-        onOrderComplete();
-      }
-    }, 1000);
+    setShowQRCode(false);
+    setShowReceipt(true);
   };
 
   const handlePrintBill = () => {
     window.print();
   };
 
-  if (cart.length === 0 && !order) {
+  // No cart items passed from POS - redirect
+  if (cartItems.length === 0 && !order) {
     return (
-      <div className="loading-state">
-        <p>No active order to bill.</p>
+      <div className="bill-empty-state">
+        <div className="bill-empty-icon">
+          <Banknote size={48} strokeWidth={1.5} />
+        </div>
+        <h3>No active order to bill</h3>
+        <p>Add items from the POS screen to create a new order.</p>
         <button className="btn-primary" onClick={() => navigate('/')}>
           <ArrowLeft size={18} /> Return to POS
         </button>
@@ -64,90 +72,158 @@ const Bill = ({ onOrderComplete }) => {
   }
 
   return (
-    <div className="receipt-container">
-      <div className="receipt-header">
-        <h2>Order Summary</h2>
-        <p>Review and pay for your items</p>
-      </div>
-      
-      {!order ? (
-        <>
-          <table className="receipt-table">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Qty</th>
-                <th className="text-right">Price</th>
-                <th className="text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cart && cart.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.name}</td>
-                  <td>{item.quantity}</td>
-                  <td className="text-right">₹{item.price.toFixed(2)}</td>
-                  <td className="text-right">₹{item.subtotal.toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              {metadata.discount_amount > 0 && (
+    <div className="bill-page">
+      {/* Step 1: Order Summary + Payment Selection */}
+      {!order && (
+        <div className="bill-container">
+          <div className="bill-summary-card">
+            <div className="bill-summary-header">
+              <h2>Order Summary</h2>
+              <p>Review your items and select payment method</p>
+            </div>
+            
+            {/* Customer Info Bar */}
+            {(metadata.customer_name || metadata.table_number) && (
+              <div className="bill-customer-bar">
+                {metadata.customer_name && <span>👤 {metadata.customer_name}</span>}
+                {metadata.customer_phone && <span>📞 {metadata.customer_phone}</span>}
+                {metadata.order_type && <span className="bill-order-type-badge">{metadata.order_type}</span>}
+                {metadata.table_number && <span>🪑 Table {metadata.table_number}</span>}
+              </div>
+            )}
+            
+            <table className="bill-items-table">
+              <thead>
                 <tr>
-                  <td colSpan="3" style={{ paddingTop: '1.5rem' }}>Subtotal:</td>
-                  <td className="text-right" style={{ paddingTop: '1.5rem' }}>₹{metadata.subtotal?.toFixed(2) || total.toFixed(2)}</td>
+                  <th>Item</th>
+                  <th className="text-center">Qty</th>
+                  <th className="text-right">Price</th>
+                  <th className="text-right">Total</th>
                 </tr>
-              )}
+              </thead>
+              <tbody>
+                {cartItems.map((item) => (
+                  <tr key={item.id}>
+                    <td className="bill-item-name">{item.name}</td>
+                    <td className="text-center">{item.quantity}</td>
+                    <td className="text-right">₹{item.price.toFixed(2)}</td>
+                    <td className="text-right">₹{item.subtotal.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="bill-totals">
+              <div className="bill-total-row">
+                <span>Subtotal</span>
+                <span>₹{(metadata.subtotal || cartTotal).toFixed(2)}</span>
+              </div>
               {metadata.discount_amount > 0 && (
-                <tr>
-                  <td colSpan="3" style={{ color: 'var(--danger)' }}>Discount:</td>
-                  <td className="text-right" style={{ color: 'var(--danger)' }}>-₹{metadata.discount_amount?.toFixed(2)}</td>
-                </tr>
+                <div className="bill-total-row bill-discount">
+                  <span>Discount ({((metadata.discount_amount / (metadata.subtotal || cartTotal)) * 100).toFixed(0)}%)</span>
+                  <span>-₹{metadata.discount_amount.toFixed(2)}</span>
+                </div>
               )}
-              <tr>
-                <td colSpan="3" style={metadata.discount_amount === 0 ? { paddingTop: '1.5rem' } : {}}>Tax (Calculated):</td>
-                <td className="text-right" style={metadata.discount_amount === 0 ? { paddingTop: '1.5rem' } : {}}>₹{metadata.tax_amount?.toFixed(2) || 0}</td>
-              </tr>
-              <tr>
-                <td colSpan="3" style={{ fontWeight: 600 }}>Grand Total:</td>
-                <td className="text-right" style={{ fontWeight: 700, fontSize: '1.25rem', color: 'var(--primary-dark)' }}>
-                  ₹{metadata.grand_total?.toFixed(2) || total.toFixed(2)}
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-          <div className="receipt-actions">
-            <button className="btn-secondary" onClick={() => navigate('/')}>
-              <ArrowLeft size={18} /> Back
-            </button>
-            <button className="btn-primary" onClick={handlePayNow}>
-              Pay ₹{metadata.grand_total?.toFixed(2) || total.toFixed(2)}
+              <div className="bill-total-row">
+                <span>Tax (GST)</span>
+                <span>₹{(metadata.tax_amount || 0).toFixed(2)}</span>
+              </div>
+              <div className="bill-total-row bill-grand-total">
+                <span>Grand Total</span>
+                <span>₹{(metadata.grand_total || cartTotal).toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Method Selection */}
+          <div className="bill-payment-section">
+            <h3>Select Payment Method</h3>
+            <div className="payment-methods-grid">
+              <button
+                className={`payment-method-card ${paymentMethod === 'cash' ? 'selected' : ''}`}
+                onClick={() => handleSelectPayment('cash')}
+                disabled={loading}
+              >
+                <div className="payment-method-icon cash">
+                  <Banknote size={32} />
+                </div>
+                <span className="payment-method-label">Cash</span>
+                {loading && paymentMethod === 'cash' && <Loader2 size={18} className="spinner" />}
+              </button>
+              
+              <button
+                className={`payment-method-card ${paymentMethod === 'upi' ? 'selected' : ''}`}
+                onClick={() => handleSelectPayment('upi')}
+                disabled={loading}
+              >
+                <div className="payment-method-icon upi">
+                  <QrCode size={32} />
+                </div>
+                <span className="payment-method-label">UPI / QR</span>
+                {loading && paymentMethod === 'upi' && <Loader2 size={18} className="spinner" />}
+              </button>
+              
+              <button
+                className={`payment-method-card ${paymentMethod === 'card' ? 'selected' : ''}`}
+                onClick={() => handleSelectPayment('card')}
+                disabled={loading}
+              >
+                <div className="payment-method-icon card">
+                  <CreditCard size={32} />
+                </div>
+                <span className="payment-method-label">Card</span>
+                {loading && paymentMethod === 'card' && <Loader2 size={18} className="spinner" />}
+              </button>
+            </div>
+
+            <button className="btn-back-link" onClick={() => navigate('/')}>
+              <ArrowLeft size={16} /> Back to POS
             </button>
           </div>
-        </>
-      ) : (
-        <>
-          {showQRCode && !showPrint && (
+        </div>
+      )}
+
+      {/* Step 2: UPI QR Code */}
+      {order && showQRCode && !showReceipt && (
+        <div className="bill-container">
+          <div className="bill-qr-section">
             <QRCodePayment 
               order={order} 
-              total={metadata.grand_total || total}
+              total={metadata.grand_total || cartTotal}
               onPaymentConfirmed={handlePaymentConfirmed}
             />
-          )}
-          {showPrint && (
-            <>
-              <PrintBill order={order} cart={cart} metadata={metadata} total={metadata.grand_total || total} />
-              <div className="receipt-actions">
-                <button className="btn-primary" onClick={handlePrintBill}>
-                  <Printer size={18} /> Print Receipt
-                </button>
-                <button className="btn-secondary" onClick={() => navigate('/')}>
-                  New Order
-                </button>
-              </div>
-            </>
-          )}
-        </>
+          </div>
+        </div>
+      )}
+
+      {/* Step 3: Receipt + Print */}
+      {order && showReceipt && (
+        <div className="bill-container">
+          <div className="bill-success-banner">
+            <CheckCircle2 size={28} />
+            <div>
+              <strong>Payment Successful!</strong>
+              <span>Order #{order.order_number} has been placed</span>
+            </div>
+          </div>
+
+          <PrintBill 
+            order={order} 
+            cart={cartItems} 
+            metadata={metadata} 
+            total={metadata.grand_total || cartTotal}
+            paymentMethod={paymentMethod}
+          />
+
+          <div className="bill-receipt-actions">
+            <button className="btn-print" onClick={handlePrintBill}>
+              <Printer size={18} /> Print Receipt
+            </button>
+            <button className="btn-new-order" onClick={() => navigate('/')}>
+              New Order
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

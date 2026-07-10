@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Layout/Sidebar';
 import POSView from './components/POS/POSView';
 import Bill from './components/Bill/Bill';
+import OrdersList from './components/Orders/OrdersList';
 import ManageMenu from './components/Management/ManageMenu';
 import MonthlySales from './components/Reports/MonthlySales';
 import Login from './components/Auth/Login';
@@ -43,6 +44,7 @@ function App() {
           <Routes>
             <Route path="/" element={<POSView />} />
             <Route path="/bill" element={<Bill />} />
+            <Route path="/orders" element={<OrdersList />} />
             <Route path="/manage" element={<ManageMenu />} />
             <Route path="/reports" element={<MonthlySales />} />
           </Routes>

@@ -20,7 +20,7 @@ const Sidebar = ({ onLogout, user }) => {
           <LayoutDashboard size={24} />
           <span>POS</span>
         </Link>
-        <Link to="/bill" className={`nav-item ${isActive('/bill')}`}>
+        <Link to="/orders" className={`nav-item ${isActive('/orders')}`}>
           <ReceiptText size={24} />
           <span>Orders</span>
         </Link>
@@ -34,27 +34,14 @@ const Sidebar = ({ onLogout, user }) => {
         </Link>
       </nav>
 
-      <div className="sidebar-footer" style={{ marginTop: 'auto', padding: '1rem', borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-color)' }}>
+      <div className="sidebar-footer">
+        <div className="sidebar-user">
           <User size={16} />
-          <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{user?.username || 'Admin'}</span>
+          <span>{user?.username || 'Admin'}</span>
         </div>
         <button 
           onClick={onLogout}
-          style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '0.5rem', 
-            background: 'none', 
-            border: 'none', 
-            color: 'var(--danger)', 
-            cursor: 'pointer',
-            padding: '0.5rem',
-            width: '100%',
-            textAlign: 'left',
-            borderRadius: 'var(--radius-sm)'
-          }}
-          className="logout-btn"
+          className="sidebar-logout-btn"
         >
           <LogOut size={18} />
           <span>Logout</span>

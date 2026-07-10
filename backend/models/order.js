@@ -11,14 +11,16 @@ const Order = {
         order_type = 'Dine-in',
         subtotal = totalAmount,
         tax_amount = 0,
-        discount_amount = 0
+        discount_amount = 0,
+        grand_total = totalAmount,
+        payment_method_display = 'Cash'
       } = metadata;
 
       db.run(
         `INSERT INTO orders 
-          (order_number, items, total_amount, payment_method, status, customer_name, customer_phone, table_number, order_type, subtotal, tax_amount, discount_amount) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [orderNumber, itemsJson, totalAmount, paymentMethod, 'paid', customer_name, customer_phone, table_number, order_type, subtotal, tax_amount, discount_amount],
+          (order_number, items, total_amount, payment_method, status, customer_name, customer_phone, table_number, order_type, subtotal, tax_amount, discount_amount, grand_total, payment_method_display) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [orderNumber, itemsJson, totalAmount, paymentMethod, 'paid', customer_name, customer_phone, table_number, order_type, subtotal, tax_amount, discount_amount, grand_total, payment_method_display],
         function(err) {
           if (err) {
             reject(err);
@@ -73,7 +75,34 @@ const Order = {
     return new Promise((resolve, reject) => {
       db.get('SELECT * FROM orders WHERE id = ?', [id], (err, row) => {
         if (err) reject(err);
-        else resolve(row);
+        else {
+          if (row && row.items) {
+            try {
+              row.items = JSON.parse(row.items);
+            } catch (e) {
+              // items already parsed or invalid
+            }
+          }
+          resolve(row);
+        }
+      });
+    });
+  },
+
+  getByOrderNumber: async (orderNumber) => {
+    return new Promise((resolve, reject) => {
+      db.get('SELECT * FROM orders WHERE order_number = ?', [orderNumber], (err, row) => {
+        if (err) reject(err);
+        else {
+          if (row && row.items) {
+            try {
+              row.items = JSON.parse(row.items);
+            } catch (e) {
+              // items already parsed or invalid
+            }
+          }
+          resolve(row);
+        }
       });
     });
   },
@@ -82,7 +111,20 @@ const Order = {
     return new Promise((resolve, reject) => {
       db.all('SELECT * FROM orders ORDER BY created_at DESC', (err, rows) => {
         if (err) reject(err);
-        else resolve(rows);
+        else {
+          // Parse items JSON for each row
+          const parsed = (rows || []).map(row => {
+            if (row.items) {
+              try {
+                row.items = JSON.parse(row.items);
+              } catch (e) {
+                // keep as-is
+              }
+            }
+            return row;
+          });
+          resolve(parsed);
+        }
       });
     });
   },

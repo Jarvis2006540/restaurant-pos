@@ -158,6 +158,8 @@ function initializeDatabase() {
       subtotal REAL,
       tax_amount REAL,
       discount_amount REAL,
+      grand_total REAL,
+      payment_method_display TEXT DEFAULT 'Cash',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `, (err) => {
@@ -171,7 +173,9 @@ function initializeDatabase() {
         "order_type TEXT DEFAULT 'Dine-in'",
         "subtotal REAL",
         "tax_amount REAL",
-        "discount_amount REAL"
+        "discount_amount REAL",
+        "grand_total REAL",
+        "payment_method_display TEXT DEFAULT 'Cash'"
       ];
       newColumns.forEach(col => {
         db.run(`ALTER TABLE orders ADD COLUMN ${col}`, (err) => {

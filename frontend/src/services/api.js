@@ -38,9 +38,10 @@ export const cartAPI = {
 
 // Orders API
 export const ordersAPI = {
-  create: (paymentMethod = 'custom', metadata = {}) => api.post('/orders/create', { payment_method: paymentMethod, ...metadata }),
+  create: (orderData) => api.post('/orders/create', orderData),
   getById: (id) => api.get(`/orders/${id}`),
-  getAll: () => api.get('/orders'),
+  getByNumber: (orderNumber) => api.get(`/orders/number/${orderNumber}`),
+  getAll: () => api.get('/orders/all'),
 };
 
 // Reports API

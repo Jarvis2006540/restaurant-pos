@@ -3,7 +3,7 @@ const cartController = require('./cartController');
 
 function generateOrderNumber() {
   const timestamp = Date.now();
-  const random = Math.floor(Math.random() * 1000);
+  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
   return `ORD-${timestamp}-${random}`;
 }
 
@@ -20,7 +20,7 @@ const orderController = {
       }
 
       const orderNumber = generateOrderNumber();
-      const paymentMethod = req.body.payment_method || 'custom';
+      const paymentMethod = req.body.payment_method || 'cash';
       
       const metadata = {
         customer_name: req.body.customer_name || '',
@@ -29,7 +29,9 @@ const orderController = {
         order_type: req.body.order_type || 'Dine-in',
         subtotal: req.body.subtotal || total,
         tax_amount: req.body.tax_amount || 0,
-        discount_amount: req.body.discount_amount || 0
+        discount_amount: req.body.discount_amount || 0,
+        grand_total: req.body.grand_total || total,
+        payment_method_display: req.body.payment_method_display || 'Cash'
       };
 
       const order = await Order.create(orderNumber, cart, total, paymentMethod, metadata);
@@ -46,6 +48,18 @@ const orderController = {
   getOrderById: async (req, res) => {
     try {
       const order = await Order.getById(req.params.id);
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+      res.json(order);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  getOrderByNumber: async (req, res) => {
+    try {
+      const order = await Order.getByOrderNumber(req.params.orderNumber);
       if (!order) {
         return res.status(404).json({ error: 'Order not found' });
       }

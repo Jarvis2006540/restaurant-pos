@@ -1,81 +1,124 @@
 import React from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 
-const PrintBill = ({ order, cart, total, metadata }) => {
-  if (!order || !cart || !Array.isArray(cart)) return null;
+const PrintBill = ({ order, cart, total, metadata, paymentMethod }) => {
+  if (!order) return null;
+
+  // Use items from order if cart not provided (for reprint from orders page)
+  const items = (cart && cart.length > 0) ? cart : (Array.isArray(order.items) ? order.items : []);
+  const method = paymentMethod || order.payment_method_display || order.payment_method || 'Cash';
+  const methodLabel = method === 'upi' ? 'UPI' : method === 'card' ? 'Card' : method === 'cash' ? 'Cash' : method;
+
+  const orderTotal = total || order.grand_total || order.total_amount || 0;
+  const taxAmount = metadata?.tax_amount ?? order.tax_amount ?? 0;
+  const discountAmount = metadata?.discount_amount ?? order.discount_amount ?? 0;
+  const subtotal = metadata?.subtotal ?? order.subtotal ?? orderTotal;
 
   const upiId = 'cssurya2006@okicici';
   const payeeName = 'Restaurant';
-  const upiUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${total.toFixed(2)}&cu=INR&tn=Order%20${order.order_number}`;
+  const upiUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${orderTotal.toFixed(2)}&cu=INR&tn=Order%20${order.order_number}`;
 
   return (
     <div className="print-bill" id="print-bill">
       <style>
         {`
           @media print {
-            body * { visibility: hidden; }
-            #print-bill, #print-bill * { visibility: visible; }
+            body * { visibility: hidden !important; }
+            #print-bill, #print-bill * { visibility: visible !important; }
             #print-bill { 
               position: absolute; 
               left: 0; 
               top: 0; 
               width: 80mm; 
-              font-family: monospace;
+              font-family: 'Courier New', Courier, monospace;
               padding: 5mm;
               margin: 0 auto;
+              background: #fff !important;
+              color: #000 !important;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .bill-receipt-actions,
+            .bill-success-banner,
+            .sidebar,
+            .no-print { 
+              display: none !important; 
             }
           }
-          
-          .thermal-receipt {
-            width: 80mm;
-            margin: 0 auto;
-            padding: 1rem;
-            background: #fff;
-            border: 1px solid #ddd;
-            font-family: 'Courier New', Courier, monospace;
-            color: #000;
-          }
-          .receipt-center { text-align: center; }
-          .receipt-divider { border-bottom: 1px dashed #000; margin: 10px 0; }
-          .receipt-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-          .receipt-table th { border-bottom: 1px dashed #000; padding-bottom: 5px; text-align: left; }
-          .receipt-table td { padding: 5px 0; }
-          .receipt-right { text-align: right; }
-          .receipt-qr { display: flex; justify-content: center; margin: 15px 0; }
         `}
       </style>
       
       <div className="thermal-receipt">
+        {/* Header */}
         <div className="receipt-center">
-          <h2 style={{ margin: '0 0 5px 0' }}>THE GRAND RESTAURANT</h2>
-          <p style={{ margin: 0, fontSize: '0.85rem' }}>123 Food Street, City, 10001</p>
-          <p style={{ margin: '0 0 10px 0', fontSize: '0.85rem' }}>Ph: +91 98765 43210</p>
+          <h2 className="receipt-shop-name">THE GRAND RESTAURANT</h2>
+          <p className="receipt-address">123 Food Street, City, 10001</p>
+          <p className="receipt-phone">Ph: +91 98765 43210</p>
+          <p className="receipt-gstin">GSTIN: 33AABCU9603R1ZM</p>
         </div>
         
         <div className="receipt-divider"></div>
         
-        <div style={{ fontSize: '0.9rem', lineHeight: '1.4' }}>
-          <p style={{ margin: 0 }}><strong>Order:</strong> {order.order_number}</p>
-          <p style={{ margin: 0 }}><strong>Date:</strong> {new Date(order.created_at).toLocaleString()}</p>
-          {metadata?.order_type && <p style={{ margin: 0 }}><strong>Type:</strong> {metadata.order_type}</p>}
-          {metadata?.table_number && <p style={{ margin: 0 }}><strong>Table:</strong> {metadata.table_number}</p>}
-          {metadata?.customer_name && <p style={{ margin: 0 }}><strong>Customer:</strong> {metadata.customer_name}</p>}
+        {/* Order Info */}
+        <div className="receipt-info-section">
+          <div className="receipt-info-row">
+            <span>Order:</span>
+            <span>{order.order_number}</span>
+          </div>
+          <div className="receipt-info-row">
+            <span>Date:</span>
+            <span>{new Date(order.created_at).toLocaleString('en-IN', { 
+              day: '2-digit', month: '2-digit', year: 'numeric',
+              hour: '2-digit', minute: '2-digit', hour12: true 
+            })}</span>
+          </div>
+          <div className="receipt-info-row">
+            <span>Payment:</span>
+            <span>{methodLabel}</span>
+          </div>
+          {(metadata?.order_type || order.order_type) && (
+            <div className="receipt-info-row">
+              <span>Type:</span>
+              <span>{metadata?.order_type || order.order_type}</span>
+            </div>
+          )}
+          {(metadata?.table_number || order.table_number) && (
+            <div className="receipt-info-row">
+              <span>Table:</span>
+              <span>{metadata?.table_number || order.table_number}</span>
+            </div>
+          )}
+          {(metadata?.customer_name || order.customer_name) && (
+            <div className="receipt-info-row">
+              <span>Customer:</span>
+              <span>{metadata?.customer_name || order.customer_name}</span>
+            </div>
+          )}
+          {(metadata?.customer_phone || order.customer_phone) && (
+            <div className="receipt-info-row">
+              <span>Phone:</span>
+              <span>{metadata?.customer_phone || order.customer_phone}</span>
+            </div>
+          )}
         </div>
         
-        <table className="receipt-table">
+        <div className="receipt-divider"></div>
+
+        {/* Items Table */}
+        <table className="receipt-items-table">
           <thead>
             <tr>
-              <th style={{ width: '50%' }}>Item</th>
-              <th style={{ width: '15%' }}>Qty</th>
-              <th style={{ width: '35%' }} className="receipt-right">Amount</th>
+              <th className="receipt-col-item">Item</th>
+              <th className="receipt-col-qty">Qty</th>
+              <th className="receipt-col-amt">Amt</th>
             </tr>
           </thead>
           <tbody>
-            {cart.map((item) => (
-              <tr key={item.id}>
-                <td style={{ fontSize: '0.9rem' }}>{item.name}</td>
-                <td style={{ fontSize: '0.9rem' }}>{item.quantity}</td>
-                <td style={{ fontSize: '0.9rem' }} className="receipt-right">{(item.subtotal || item.price * item.quantity).toFixed(2)}</td>
+            {items.map((item, index) => (
+              <tr key={item.id || index}>
+                <td className="receipt-col-item">{item.name}</td>
+                <td className="receipt-col-qty">{item.quantity}</td>
+                <td className="receipt-col-amt">{(item.subtotal || item.price * item.quantity).toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
@@ -83,50 +126,55 @@ const PrintBill = ({ order, cart, total, metadata }) => {
         
         <div className="receipt-divider"></div>
         
-        <table style={{ width: '100%', fontSize: '0.9rem' }}>
-          <tbody>
-            {metadata?.discount_amount > 0 && (
-              <>
-                <tr>
-                  <td>Subtotal:</td>
-                  <td className="receipt-right">{(metadata.subtotal || total + metadata.discount_amount).toFixed(2)}</td>
-                </tr>
-                <tr>
-                  <td>Discount:</td>
-                  <td className="receipt-right">- {metadata.discount_amount.toFixed(2)}</td>
-                </tr>
-              </>
-            )}
-            <tr>
-              <td>CGST:</td>
-              <td className="receipt-right">{((metadata?.tax_amount || 0) / 2).toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td>SGST:</td>
-              <td className="receipt-right">{((metadata?.tax_amount || 0) / 2).toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 'bold', paddingTop: '10px' }}>GRAND TOTAL:</td>
-              <td className="receipt-right" style={{ fontWeight: 'bold', paddingTop: '10px', fontSize: '1.1rem' }}>₹{total.toFixed(2)}</td>
-            </tr>
-          </tbody>
-        </table>
-        
-        <div className="receipt-divider"></div>
-        
-        <div className="receipt-center">
-          <p style={{ margin: '5px 0', fontSize: '0.9rem', fontWeight: 'bold' }}>Scan to Pay with UPI</p>
-          <div className="receipt-qr">
-            <QRCodeCanvas value={upiUri} size={120} level={"M"} />
+        {/* Totals */}
+        <div className="receipt-totals">
+          {discountAmount > 0 && (
+            <>
+              <div className="receipt-total-row">
+                <span>Subtotal:</span>
+                <span>{subtotal.toFixed(2)}</span>
+              </div>
+              <div className="receipt-total-row">
+                <span>Discount:</span>
+                <span>-{discountAmount.toFixed(2)}</span>
+              </div>
+            </>
+          )}
+          <div className="receipt-total-row">
+            <span>CGST:</span>
+            <span>{(taxAmount / 2).toFixed(2)}</span>
           </div>
-          <p style={{ margin: 0, fontSize: '0.8rem' }}>UPI ID: {upiId}</p>
+          <div className="receipt-total-row">
+            <span>SGST:</span>
+            <span>{(taxAmount / 2).toFixed(2)}</span>
+          </div>
+          <div className="receipt-divider-thin"></div>
+          <div className="receipt-total-row receipt-grand-total">
+            <span>GRAND TOTAL:</span>
+            <span>₹{orderTotal.toFixed(2)}</span>
+          </div>
         </div>
         
         <div className="receipt-divider"></div>
         
-        <div className="receipt-center" style={{ fontSize: '0.9rem', marginTop: '10px' }}>
-          <p style={{ margin: 0, fontWeight: 'bold' }}>Thank you for your visit!</p>
-          <p style={{ margin: '5px 0 0 0', fontSize: '0.8rem' }}>Please visit again</p>
+        {/* QR Code - only for UPI payments */}
+        {(method === 'upi' || method === 'UPI') && (
+          <>
+            <div className="receipt-center">
+              <p className="receipt-scan-label">Scan to Pay with UPI</p>
+              <div className="receipt-qr">
+                <QRCodeCanvas value={upiUri} size={120} level={"M"} />
+              </div>
+              <p className="receipt-upi-id">UPI ID: {upiId}</p>
+            </div>
+            <div className="receipt-divider"></div>
+          </>
+        )}
+        
+        {/* Footer */}
+        <div className="receipt-center receipt-footer">
+          <p className="receipt-thank-you">Thank you for your visit!</p>
+          <p className="receipt-visit-again">Please visit again</p>
         </div>
       </div>
     </div>

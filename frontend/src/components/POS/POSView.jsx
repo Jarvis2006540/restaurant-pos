@@ -30,7 +30,7 @@ const POSView = () => {
   };
 
   const handleCheckout = (metadata) => {
-    navigate('/bill', { state: { metadata } });
+    navigate('/bill', { state: { metadata, cartItems: cart, cartTotal: total } });
   };
 
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
