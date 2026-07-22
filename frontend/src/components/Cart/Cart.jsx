@@ -1,33 +1,12 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, User, Phone, Hash } from 'lucide-react';
-import { cartAPI } from '../../services/api';
 
-const Cart = ({ cartItems, total, onCartUpdate, onCheckout }) => {
+const Cart = ({ cartItems, total, onUpdateQuantity, onClearCart, onCheckout }) => {
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [tableNumber, setTableNumber] = useState('');
   const [orderType, setOrderType] = useState('Dine-in');
   const [discountPercent, setDiscountPercent] = useState(0);
-
-  const handleUpdateQuantity = async (menuId, quantity) => {
-    try {
-      await cartAPI.update(menuId, quantity);
-      onCartUpdate();
-    } catch (err) {
-      alert('Failed to update cart: ' + err.message);
-    }
-  };
-
-
-
-  const handleClearCart = async () => {
-    try {
-      await cartAPI.clear();
-      onCartUpdate();
-    } catch (err) {
-      alert('Failed to clear cart: ' + err.message);
-    }
-  };
 
   const handleProceedToCheckout = () => {
     const discountAmount = total * (discountPercent / 100);
@@ -78,7 +57,7 @@ const Cart = ({ cartItems, total, onCartUpdate, onCheckout }) => {
             </span>
           </div>
           {cartItems.length > 0 && (
-            <button className="clear-cart-btn" onClick={handleClearCart}>
+            <button className="clear-cart-btn" onClick={onClearCart}>
               Clear
             </button>
           )}
@@ -142,14 +121,14 @@ const Cart = ({ cartItems, total, onCartUpdate, onCheckout }) => {
               <div className="cart-item-actions">
                 <button 
                   className="cart-qty-btn"
-                  onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                  onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
                 >
                   {item.quantity === 1 ? <Trash2 size={14} color="var(--danger)" /> : <Minus size={14} />}
                 </button>
                 <span className="cart-qty-val">{item.quantity}</span>
                 <button 
                   className="cart-qty-btn"
-                  onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                  onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
                 >
                   <Plus size={14} />
                 </button>

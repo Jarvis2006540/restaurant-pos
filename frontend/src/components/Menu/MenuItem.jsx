@@ -1,10 +1,9 @@
 import React from 'react';
-import { BACKEND_URL } from '../../services/api';
+import { getPlaceholderImage } from '../../services/imageUpload';
 
 const MenuItem = ({ item, onAddToCart }) => {
-  const imageUrl = item.image 
-    ? (item.image.startsWith('http') || item.image.startsWith('data:') ? item.image : `${BACKEND_URL}${item.image}`)
-    : `https://placehold.co/400x300/EAEAEA/888888?text=${encodeURIComponent(item.name.substring(0,6))}`;
+  const placeholder = getPlaceholderImage(item.name);
+  const imageUrl = item.image && item.image.length > 5 ? item.image : placeholder;
 
   return (
     <div className="menu-item" onClick={() => onAddToCart(item.id)}>
@@ -13,7 +12,8 @@ const MenuItem = ({ item, onAddToCart }) => {
           src={imageUrl} 
           alt={item.name}
           onError={(e) => {
-            e.target.src = 'https://placehold.co/400x300/EAEAEA/888888?text=' + encodeURIComponent(item.name.substring(0,6));
+            e.target.onerror = null;
+            e.target.src = placeholder;
           }}
         />
         {item.category && <span className="menu-item-category">{item.category}</span>}

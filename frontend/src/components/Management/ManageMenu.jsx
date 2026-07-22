@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { menuAPI, BACKEND_URL } from '../../services/api';
+import { menuAPI } from '../../services/api';
+import { getPlaceholderImage } from '../../services/imageUpload';
 import MenuForm from './MenuForm';
 import { Edit2, Trash2, Plus } from 'lucide-react';
 
@@ -90,11 +91,12 @@ const ManageMenu = () => {
                 <td>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <img 
-                      src={item.image ? (item.image.startsWith('http') || item.image.startsWith('data:') ? item.image : `${BACKEND_URL}${item.image}`) : `https://placehold.co/50x50/EAEAEA/888888?text=${encodeURIComponent(item.name.substring(0,2))}`}
+                      src={item.image && item.image.length > 5 ? item.image : getPlaceholderImage(item.name)}
                       alt={item.name}
                       style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }}
                       onError={(e) => {
-                        e.target.src = 'https://placehold.co/50x50/EAEAEA/888888?text=' + encodeURIComponent(item.name.substring(0,2));
+                        e.target.onerror = null;
+                        e.target.src = getPlaceholderImage(item.name);
                       }}
                     />
                     <div style={{ fontWeight: 600 }}>{item.name}</div>

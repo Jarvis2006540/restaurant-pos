@@ -34,6 +34,7 @@ const Bill = () => {
       const orderData = {
         payment_method: method,
         payment_method_display: method === 'cash' ? 'Cash' : method === 'upi' ? 'UPI' : 'Card',
+        items: cartItems, // Send cart items directly from client
         ...metadata,
       };
       

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, X } from 'lucide-react';
-import { menuAPI, BACKEND_URL } from '../../services/api';
+import { menuAPI } from '../../services/api';
 
 const MenuForm = ({ item, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -27,7 +27,7 @@ const MenuForm = ({ item, onClose, onSubmit }) => {
         image: null,
       });
       if (item.image) {
-        setImagePreview(item.image.startsWith('/') ? `${BACKEND_URL}${item.image}` : item.image);
+        setImagePreview(item.image);
       }
     }
   }, [item]);

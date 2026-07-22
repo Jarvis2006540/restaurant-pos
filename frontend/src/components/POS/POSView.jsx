@@ -3,31 +3,84 @@ import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, X } from 'lucide-react';
 import MenuList from '../Menu/MenuList';
 import Cart from '../Cart/Cart';
-import { cartAPI } from '../../services/api';
+import { menuAPI } from '../../services/api';
 
 const POSView = () => {
   const navigate = useNavigate();
+  const [menuItems, setMenuItems] = useState([]);
+  const [menuLoading, setMenuLoading] = useState(true);
+  const [menuError, setMenuError] = useState(null);
   const [cart, setCart] = useState([]);
-  const [total, setTotal] = useState(0);
   const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
 
-  const fetchCart = useCallback(async () => {
-    try {
-      const response = await cartAPI.get();
-      setCart(response.data.cart || []);
-      setTotal(response.data.total || 0);
-    } catch (err) {
-      console.error('Error fetching cart:', err);
-    }
+  // Fetch menu items once on mount
+  useEffect(() => {
+    let cancelled = false;
+    const fetchMenu = async () => {
+      try {
+        const response = await menuAPI.getAll();
+        if (!cancelled) {
+          setMenuItems(response.data);
+          setMenuLoading(false);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setMenuError(err.message);
+          setMenuLoading(false);
+        }
+      }
+    };
+    fetchMenu();
+    return () => { cancelled = true; };
   }, []);
 
-  useEffect(() => {
-    fetchCart();
-  }, [fetchCart]);
+  // Client-side cart operations — instant, no network calls
+  const addToCart = useCallback((menuId) => {
+    setCart(prev => {
+      const menuItem = menuItems.find(item => item.id === menuId);
+      if (!menuItem) return prev;
 
-  const handleCartUpdate = () => {
-    fetchCart();
-  };
+      const existingIndex = prev.findIndex(item => item.id === menuId);
+      if (existingIndex >= 0) {
+        const updated = [...prev];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          quantity: updated[existingIndex].quantity + 1,
+          subtotal: (updated[existingIndex].quantity + 1) * updated[existingIndex].price,
+        };
+        return updated;
+      }
+
+      return [...prev, {
+        id: menuItem.id,
+        name: menuItem.name,
+        price: menuItem.price,
+        image: menuItem.image,
+        gst_percentage: menuItem.gst_percentage || 0,
+        quantity: 1,
+        subtotal: menuItem.price,
+      }];
+    });
+  }, [menuItems]);
+
+  const updateCartQuantity = useCallback((menuId, quantity) => {
+    setCart(prev => {
+      if (quantity <= 0) {
+        return prev.filter(item => item.id !== menuId);
+      }
+      return prev.map(item =>
+        item.id === menuId
+          ? { ...item, quantity, subtotal: quantity * item.price }
+          : item
+      );
+    });
+  }, []);
+
+  const clearCart = useCallback(() => {
+    setCart([]);
+  }, []);
+
+  const total = cart.reduce((sum, item) => sum + item.subtotal, 0);
 
   const handleCheckout = (metadata) => {
     navigate('/bill', { state: { metadata, cartItems: cart, cartTotal: total } });
@@ -38,7 +91,12 @@ const POSView = () => {
   return (
     <div className="pos-container">
       <div className="menu-section">
-        <MenuList onCartUpdate={handleCartUpdate} />
+        <MenuList
+          menuItems={menuItems}
+          loading={menuLoading}
+          error={menuError}
+          onAddToCart={addToCart}
+        />
       </div>
 
       {/* Floating Action Button for Mobile Cart */}
@@ -70,7 +128,8 @@ const POSView = () => {
         <Cart 
           cartItems={cart} 
           total={total} 
-          onCartUpdate={handleCartUpdate} 
+          onUpdateQuantity={updateCartQuantity}
+          onClearCart={clearCart}
           onCheckout={handleCheckout} 
         />
       </div>

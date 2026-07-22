@@ -10,10 +10,18 @@ function generateOrderNumber() {
 const orderController = {
   createOrder: async (req, res) => {
     try {
-      // Get current cart
-      const cartData = cartController.getCartData();
-      const cart = cartData.cart || [];
-      const total = cartData.total || 0;
+      // Support client-side cart (items sent in request body) with fallback to server-side cart
+      let cart, total;
+      if (req.body.items && Array.isArray(req.body.items) && req.body.items.length > 0) {
+        // Client-side cart: items sent directly from frontend
+        cart = req.body.items;
+        total = cart.reduce((sum, item) => sum + (item.subtotal || item.price * item.quantity), 0);
+      } else {
+        // Fallback: server-side cart
+        const cartData = cartController.getCartData();
+        cart = cartData.cart || [];
+        total = cartData.total || 0;
+      }
 
       if (cart.length === 0) {
         return res.status(400).json({ error: 'Cart is empty' });
@@ -36,7 +44,7 @@ const orderController = {
 
       const order = await Order.create(orderNumber, cart, total, paymentMethod, metadata);
 
-      // Clear cart after order creation
+      // Clear server-side cart if it was used
       cartController.clearCartData();
 
       res.status(201).json(order);
