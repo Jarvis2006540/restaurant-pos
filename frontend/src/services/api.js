@@ -247,7 +247,7 @@ export const ordersAPI = {
     const orderRow = await db.execute({ sql: 'SELECT * FROM orders WHERE id = ?', args: [orderId] });
     const order = { ...orderRow.rows[0] };
     if (order.items && typeof order.items === 'string') {
-      try { order.items = JSON.parse(order.items); } catch (e) { /* keep as-is */ }
+      try { order.items = JSON.parse(order.items); } catch { /* keep as-is */ }
     }
 
     return { data: order };
@@ -258,7 +258,7 @@ export const ordersAPI = {
     const result = await db.execute({ sql: 'SELECT * FROM orders WHERE id = ?', args: [id] });
     const order = result.rows[0] ? { ...result.rows[0] } : null;
     if (order && order.items && typeof order.items === 'string') {
-      try { order.items = JSON.parse(order.items); } catch (e) { /* keep as-is */ }
+      try { order.items = JSON.parse(order.items); } catch { /* keep as-is */ }
     }
     return { data: order };
   },
@@ -268,7 +268,7 @@ export const ordersAPI = {
     const result = await db.execute({ sql: 'SELECT * FROM orders WHERE order_number = ?', args: [orderNumber] });
     const order = result.rows[0] ? { ...result.rows[0] } : null;
     if (order && order.items && typeof order.items === 'string') {
-      try { order.items = JSON.parse(order.items); } catch (e) { /* keep as-is */ }
+      try { order.items = JSON.parse(order.items); } catch { /* keep as-is */ }
     }
     return { data: order };
   },
@@ -279,7 +279,7 @@ export const ordersAPI = {
     const orders = result.rows.map(row => {
       const order = { ...row };
       if (order.items && typeof order.items === 'string') {
-        try { order.items = JSON.parse(order.items); } catch (e) { /* keep as-is */ }
+        try { order.items = JSON.parse(order.items); } catch { /* keep as-is */ }
       }
       return order;
     });

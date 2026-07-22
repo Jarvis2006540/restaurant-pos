@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { settingsAPI } from '../../services/api';
-import { Loader2, Save, Store, MapPin, Phone, FileText, QrCode, Banknote, HeartHandshake, Smile } from 'lucide-react';
+import { Loader2, Save, Store, MapPin, Phone, FileText, QrCode, HeartHandshake, Smile } from 'lucide-react';
 
 const ReceiptSettings = () => {
   const [settings, setSettings] = useState({

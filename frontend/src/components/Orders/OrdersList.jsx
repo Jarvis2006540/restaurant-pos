@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ordersAPI, settingsAPI } from '../../services/api';
 import PrintBill from '../Bill/PrintBill';
-import { Loader2, Search, Eye, Printer, X, ReceiptText, Calendar, Filter, ChevronDown, Trash } from 'lucide-react';
+import { Loader2, Search, Eye, Printer, X, ReceiptText, Filter, ChevronDown, Trash } from 'lucide-react';
 
 const OrdersList = () => {
   const [orders, setOrders] = useState([]);
